@@ -35,10 +35,10 @@ Introducing a **robust API** for Telegram Music Bots that allows **audio & video
 
 | 💼 Plan        | ⚡ Rate Limit         | ♾️ Usage     | 💵 Price (INR/month) | 🔑 Access Type    |
 |---------------|-----------------------|-------------|----------------------|------------------|
-| 🟢 **Lite**      | 3000 requests/day     | per month    | ₹99                  | API_KEY          |
-| 🔵 **Basic**     | 5000 requests/day     | per month    | ₹179                 | API_KEY          |
-| 🟣 **Pro**       | 10000 requests/day    | per month    | ₹349                 | API_KEY          |
-| 🔴 **Ultra pro** | 20000 requests/day    | per month    | ₹699                 | API_KEY          |
+| 🟢 **Lite**      | 5000 requests/day     | per month    | ₹99                  | API_KEY          |
+| 🔵 **Basic**     | 6000 requests/day     | per month    | ₹179                 | API_KEY          |
+| 🟣 **Pro**       | 12000 requests/day    | per month    | ₹349                 | API_KEY          |
+| 🔴 **Ultra pro** | 22000 requests/day    | per month    | ₹699                 | API_KEY          |
 
 > **Note:** API keys are unique to each user. The Unlimited plan is tied to a single IP address.
 
@@ -52,12 +52,12 @@ Introducing a **robust API** for Telegram Music Bots that allows **audio & video
 
 🔑 API Access Key
 
-Contact US [𝐀𝐏𝐈 𝐚𝐧𝐝 𝐩𝐫𝐨𝐦𝐨𝐭𝐢𝐨𝐧](https://t.me/Api_and_promotion)
+Contact US [𝐀𝐏𝐈 𝐚𝐧𝐝 𝐩𝐫𝐨𝐦𝐨𝐭𝐢𝐨𝐧](https://t.me/HEROKU_CLUB)
 
-> Online Documentation: https://tgapi.xbitcode.com/docs
-> Get your API key from :[ https://t.me/tgmusic_apibot](https://t.me/tgmusic_apibot)
-> Use your key in config.py
-> API key patter: xbit_10000000xx0233
+> Online Documentation: https://api.vniox.store
+> Get your API key from :[https://t.me/VnioxTechApi](https://t.me/VnioxTechApi)
+> Use your key in youtube.py
+
 
 
 ---
@@ -70,9 +70,9 @@ Contact US [𝐀𝐏𝐈 𝐚𝐧𝐝 𝐩𝐫𝐨𝐦𝐨𝐭𝐢𝐨𝐧](http
 
 Need help or want to subscribe?
 
-Telegram:[𝐀𝐏𝐈 𝐚𝐧𝐝 𝐩𝐫𝐨𝐦𝐨𝐭𝐢𝐨𝐧](https://t.me/Api_and_promotion)
+Telegram:[𝐀𝐏𝐈 𝐚𝐧𝐝 𝐩𝐫𝐨𝐦𝐨𝐭𝐢𝐨𝐧](https://t.me/VnioxTechApi)
 
-Maintained by:  [Xbitcode](https://xbitcode.com/)
+Maintained by:  [VNI0X](https://api.vniox.store)
 
 ---
 
@@ -93,13 +93,13 @@ Users must follow YouTube’s Terms of Service and Telegram’s Bot Policy.
     ─「 ᴅᴇᴩʟᴏʏ ᴏɴ ʜᴇʀᴏᴋᴜ 」─
 </h3>
 
-<p align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/xbitcode/music"> <img src="https://img.shields.io/badge/Deploy%20On%20Heroku-purple?style=for-the-badge&logo=heroku" width="220" height="38.45"/></a></p>
+<p align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/VNI0X/VNI0X"> <img src="https://img.shields.io/badge/Deploy%20On%20Heroku-purple?style=for-the-badge&logo=heroku" width="220" height="38.45"/></a></p>
 
 <h3 align="center">
     ─「 ᴅᴇᴩʟᴏʏ ᴏɴ ʟᴏᴄᴀʟ ʜᴏsᴛ/ ᴠᴘs 」─
 </h3>
 
-- Get your [Necessary Variables](https://github.com/xbitcode/music/blob/main/sample.env)
+- Get your [Necessary Variables](https://github.com/VNI0X/VNI0X/blob/main/sample.env)
 - Upgrade and Update by :
 `sudo apt-get update && sudo apt-get upgrade -y`
 - Install Ffmpeg by :
@@ -111,7 +111,7 @@ Users must follow YouTube’s Terms of Service and Telegram’s Bot Policy.
 - Install Node js by :
 `curl -fssL https://deb.nodesource.com/setup_19.x | sudo -E bash - && sudo apt-get install nodejs -y && npm i -g npm`
 - Clone the repository by :
-`git clone https://github.com/xbitcode/music && cd music`
+`git clone https://github.com/VNI0X/VNI0X && cd VNI0X`
 - Install requirements by :
 `pip3 install -U -r requirements.txt`
 - Fill your variables in the env by :
@@ -132,20 +132,20 @@ Press `Ctrl+C` when you're done with editing env and `:wq` to save the env<br>
 </h3>
 
 <p align="center">
-<a href="https://t.me/stranger_support"><img src="https://img.shields.io/badge/-Support%20Group-blue.svg?style=for-the-badge&logo=Telegram"></a>
+<a href="https://t.me/NOBITA_SUPPORT"><img src="https://img.shields.io/badge/-Support%20Group-blue.svg?style=for-the-badge&logo=Telegram"></a>
 </p>
 
 <p align="center">
-<a href="https://telegram.me/Ace_networkop"><img src="https://img.shields.io/badge/-Support%20Channel-blue.svg?style=for-the-badge&logo=Telegram"></a>
+<a href="https://telegram.me/HEROKU_CLUB"><img src="https://img.shields.io/badge/-Support%20Channel-blue.svg?style=for-the-badge&logo=Telegram"></a>
 </p>
 
 <p align="center">
-  Made with ❤️ by <strong>XBITCODE</strong>
+  Made with ❤️ by <strong>VNI0X</strong>
 </p>
 ```
 
 - <b> _sᴩᴇᴄɪᴀʟ ᴛʜᴀɴᴋs ᴛᴏ Sparrow For [Core Development](https://github.com/sparrow9616)
 - <br>_sᴩᴇᴄɪᴀʟ ᴛʜᴀɴᴋs ᴛᴏ  Rehanna For [Youtube Proxy](https://github.com/gr8rehanna) 
-- <br>_Maintainer  [Ami](https://github.com/amjiddader)
+- <br>_Maintainer  [Ami](https://github.com/VNI0X)
 - <br>__sᴩᴇᴄɪᴀʟ ᴛʜᴀɴᴋs ᴛᴏ Team yukki and Anon for base repository ♥️.
 
