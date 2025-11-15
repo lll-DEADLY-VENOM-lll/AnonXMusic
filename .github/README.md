@@ -100,30 +100,39 @@ Users must follow YouTube’s Terms of Service and Telegram’s Bot Policy.
 </h3>
 
 - Get your [Necessary Variables](https://github.com/VNI0X/VNI0X/blob/main/sample.env)
-- Upgrade and Update by :
-`sudo apt-get update && sudo apt-get upgrade -y`
-- Install Ffmpeg by :
-`sudo apt-get install python3-pip ffmpeg -y`
-- Install required packages by :
-`sudo apt-get install python3-pip -y`
-- Install pip by :
-`sudo pip3 install -U pip`
-- Install Node js by :
-`curl -fssL https://deb.nodesource.com/setup_19.x | sudo -E bash - && sudo apt-get install nodejs -y && npm i -g npm`
-- Clone the repository by :
+
+# 1️⃣ System Update & Dependencies Install
+`sudo apt update && sudo apt upgrade -y
+sudo apt install python3 python3-pip python3-venv -y
+sudo apt install ffmpeg -y
+sudo apt install git -y`
+
+# 2️⃣ Bot Repo Clone Karo
 `git clone https://github.com/VNI0X/VNI0X && cd VNI0X`
-- Install requirements by :
-`pip3 install -U -r requirements.txt`
-- Fill your variables in the env by :
-`vi sample.env`<br>
-Press `I` on the keyboard for editing env<br>
-Press `Ctrl+C` when you're done with editing env and `:wq` to save the env<br>
-- Rename the env file by :
-`mv sample.env .env`
-- Install tmux to keep running your bot when you close the terminal by :
-`sudo apt install tmux && tmux`
-- Finally run the bot by :
+
+# 3️⃣ Virtual Environment Banao (Recommended)
+`pip install --upgrade pip
+pip install -r requirements.txt`
+
+# 5️⃣ Config File Set Karo
+`nano .env`  ( Variables Set kro )
+
+#THEN USE 
+CTRL + X → Y → ENTER
+
+# 6️⃣ Bot Run Karo
 `bash start`
+
+# AGR VPS CUT HONE KE BAAD BHI APNE BOT KO CHALU RAKHNA HO TAB ( BACKGROUND RUN )
+
+# ✅ 1️⃣ Tmux Install (agar pehle se nahi hai)
+`sudo apt install tmux -y`
+
+# ✅ 2️⃣ New Tmux Session Start Karo
+`tmux new -s bot`
+# THEN START YOUR BOT 
+`bash start`
+
 - For getting out from tmux session : Press `Ctrl+b` and then `d`<br>
 ━━━━━━━━━━━━━━━━━━━━
 
