@@ -117,7 +117,7 @@ pip install -r requirements.txt`
 # 5️⃣ Config File Set Karo
 `nano .env`  ( Variables Set kro )
 
-#THEN USE 
+# THEN USE 
 CTRL + X → Y → ENTER
 
 # 6️⃣ Bot Run Karo
