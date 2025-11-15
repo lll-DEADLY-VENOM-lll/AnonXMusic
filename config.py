@@ -15,6 +15,10 @@ BOT_TOKEN = getenv("BOT_TOKEN")
 
 # Get your mongo url from cloud.mongodb.com
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
+########################################################## NOTE YOUTUBE KEY INFORMATION JOIN - @HEROKU_CLUB ##########################################################
+########################################################## YOUTUBE API BOT FIND FREE KEY USE - @VnioxApiHubBot
+# YOUTUBE KEY YOUTUBE.PY ME ADD KRNA H 
+#  ADD YOUTUBE API KEY LINE NO 53 AND 57 
 
 ## Other vaes
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
@@ -22,7 +26,7 @@ DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
 # Chat id of a group for logging bot's activities
 LOGGER_ID = int(getenv("LOGGER_ID"))
 
-# Get this value from @FallenxBot on Telegram by /id
+# Get this value from @NIKKU_MUSIC on Telegram by /id
 OWNER_ID = int(getenv("OWNER_ID"))
 
 ## Fill these variables if you're deploying on heroku.
@@ -33,7 +37,7 @@ HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 
 UPSTREAM_REPO = getenv(
     "UPSTREAM_REPO",
-    "https://github.com/xbitcode/music.git",
+    "https://github.com/VNI0X/VNI0XAPIBASE",
 )
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv(
