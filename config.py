@@ -15,10 +15,13 @@ BOT_TOKEN = getenv("BOT_TOKEN")
 
 # Get your mongo url from cloud.mongodb.com
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
+
+
 ########################################################## NOTE YOUTUBE KEY INFORMATION JOIN - @HEROKU_CLUB ##########################################################
 ########################################################## YOUTUBE API BOT FIND FREE KEY USE - @VnioxApiHubBot #######################################################
 # YOUTUBE KEY YOUTUBE.PY ME ADD KRNA H 
 #  ADD YOUTUBE API KEY LINE NO 53 AND 57 
+
 
 ## Other vaes
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
