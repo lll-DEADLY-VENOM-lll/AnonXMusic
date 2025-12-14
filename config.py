@@ -7,8 +7,8 @@ from pyrogram import filters
 load_dotenv()
 
 # Get this value from my.telegram.org/apps
-API_ID = int(getenv("API_ID"))
-API_HASH = getenv("API_HASH")
+API_ID = int(getenv("API_ID", ""))
+API_HASH = getenv("API_HASH", "")
 
 # Get your token from @BotFather on Telegram.
 BOT_TOKEN = getenv("BOT_TOKEN")
@@ -27,10 +27,10 @@ MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
 
 # Chat id of a group for logging bot's activities
-LOGGER_ID = int(getenv("LOGGER_ID"))
+LOGGER_ID = int(getenv("LOGGER_ID", "-1001511253627"))
 
 # Get this value from @NIKKU_MUSIC on Telegram by /id
-OWNER_ID = int(getenv("OWNER_ID"))
+OWNER_ID = int(getenv("OWNER_ID", "7967418569"))
 
 ## Fill these variables if you're deploying on heroku.
 # Your heroku app name
@@ -47,7 +47,7 @@ GIT_TOKEN = getenv(
     "GIT_TOKEN", None
 )  # Fill this variable if your upstream repository is private
 
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/HEROKU_CLUB")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/NIKKU_HUB")
 SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/NOBITA_SUPPORT")
 
 # Set this to True if you want the assistant to automatically leave chats after an interval
