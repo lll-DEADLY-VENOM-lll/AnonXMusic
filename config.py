@@ -92,14 +92,14 @@ autoclean = []
 confirmer = {}
 file_cache: dict[str, float] = {}
 
-START_IMG_URL = ["https://te.legra.ph/file/5fd13f2cc0d03bce9f7f2.jpg",
-                 "https://te.legra.ph/file/c15d01b3e6b40ea141dc9.jpg",
-                 "https://te.legra.ph/file/5fd13f2cc0d03bce9f7f2.jpg"]
+START_IMG_URL = ["https://vault.pictures/p/d3be84785c25431d9d1ec9f8f5c6db9f",
+                 "https://vault.pictures/p/29211ad629894e3caced933d77d21877",
+                 "https://vault.pictures/p/4f0b7b954f3b4239bbc7fed83701bf2b"]
     
 PING_IMG_URL = getenv(
-    "PING_IMG_URL", "https://telegra.ph/file/87f680aead03443f291b0.jpg"
+    "PING_IMG_URL", "https://vault.pictures/p/e246739d8aa145a0bd6b36a58c1317ee"
 )
-PLAYLIST_IMG_URL = "https://graph.org/file/c95a687e777b55be1c792.jpg"
+PLAYLIST_IMG_URL = "https://vault.pictures/p/b757204a524e4d2fa4f1534580425668"
 STATS_IMG_URL = "https://telegra.ph/file/edd388a42dd2c499fd868.jpg"
 TELEGRAM_AUDIO_URL = "https://telegra.ph/file/492a3bb2e880d19750b79.jpg"
 TELEGRAM_VIDEO_URL = "https://telegra.ph/file/492a3bb2e880d19750b79.jpg"
