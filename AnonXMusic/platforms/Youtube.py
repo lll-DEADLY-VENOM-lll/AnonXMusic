@@ -1,19 +1,17 @@
-import asyncio
-import httpx
-import yt_dlp
-import os
-import glob
-import re
-import random
-import json
-import requests
+import asyncio, httpx, yt_dlp, os
+import glob, re, random, json, requests
+
 from typing import Union
 from pyrogram.types import Message
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 from pyrogram.enums import MessageEntityType
+from concurrent.futures import ThreadPoolExecutor
 from youtubesearchpython.__future__ import VideosSearch, CustomSearch
-from AnonXMusic.utils.formatters import time_to_seconds
 
-# Fixed: Renamed function variable to avoid shadowing function name inside
+from AnonMusic.utils.database import is_on_off
+from AnonMusic.utils.formatters import time_to_seconds
+
 def cookie_txt_file():
     try:
         folder_path = f"{os.getcwd()}/cookies"
@@ -21,16 +19,13 @@ def cookie_txt_file():
         txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
         if not txt_files:
             raise FileNotFoundError("No .txt files found in the specified folder.")
-        
-        selected_cookie = random.choice(txt_files)
-        
+        cookie_txt_file = random.choice(txt_files)
         with open(filename, 'a') as file:
-            file.write(f'Choosen File : {selected_cookie}\n')
-            
-        return f"""cookies/{str(selected_cookie).split("/")[-1]}"""
+            file.write(f'Choosen File : {cookie_txt_file}\n')
+        return f"""cookies/{str(cookie_txt_file).split("/")[-1]}"""
     except:
-        return None
-
+        pass
+      
 async def shell_cmd(cmd):
     proc = await asyncio.create_subprocess_shell(
         cmd,
@@ -45,16 +40,16 @@ async def shell_cmd(cmd):
             return errorz.decode("utf-8")
     return out.decode("utf-8")
 
+
 async def get_stream_url(query, video=False):
-    # API configuration
     apis = [
         {
             "url": "https://api.vniox.store/youtube",
-            "key": "VNI0X_7nfdc0Ox6kbWoyF" 
+            "key": ""
         },
         {
             "url": "https://api.vniox.store/youtube",
-            "key": "VNI0X_7nfdc0Ox6kbWoyF" 
+            "key": ""
         }
     ]
 
@@ -71,7 +66,9 @@ async def get_stream_url(query, video=False):
                         return stream_url
             except Exception:
                 continue
+
     return ""
+
 
 class YouTubeAPI:
     def __init__(self):
@@ -118,30 +115,16 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-            
-        # FIX: Initialize variables to prevent UnboundLocalError/NameError
-        title = None
-        duration_min = "00:00"
-        duration_sec = 0
-        thumbnail = ""
-        vidid = ""
-
-        try:
-            results = VideosSearch(link, limit=1)
-            search_result = (await results.next())
-            if search_result and "result" in search_result and search_result["result"]:
-                for result in search_result["result"]:
-                    title = result["title"]
-                    duration_min = result["duration"]
-                    thumbnail = result["thumbnails"][0]["url"].split("?")[0]
-                    vidid = result["id"]
-                    if str(duration_min) == "None":
-                        duration_sec = 0
-                    else:
-                        duration_sec = int(time_to_seconds(duration_min))
-        except Exception as e:
-            print(f"Error in details: {e}")
-            
+        results = VideosSearch(link, limit=1)
+        for result in (await results.next())["result"]:
+            title = result["title"]
+            duration_min = result["duration"]
+            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
+            vidid = result["id"]
+            if str(duration_min) == "None":
+                duration_sec = 0
+            else:
+                duration_sec = int(time_to_seconds(duration_min))
         return title, duration_min, duration_sec, thumbnail, vidid
 
     async def title(self, link: str, videoid: Union[bool, str] = None):
@@ -149,17 +132,9 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-        
-        # FIX: Initialize variable
-        title = None
-        try:
-            results = VideosSearch(link, limit=1)
-            search_result = (await results.next())
-            if search_result and "result" in search_result and search_result["result"]:
-                for result in search_result["result"]:
-                    title = result["title"]
-        except:
-            pass
+        results = VideosSearch(link, limit=1)
+        for result in (await results.next())["result"]:
+            title = result["title"]
         return title
 
     async def duration(self, link: str, videoid: Union[bool, str] = None):
@@ -167,17 +142,9 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-            
-        # FIX: Initialize variable
-        duration = None
-        try:
-            results = VideosSearch(link, limit=1)
-            search_result = (await results.next())
-            if search_result and "result" in search_result and search_result["result"]:
-                for result in search_result["result"]:
-                    duration = result["duration"]
-        except:
-            pass
+        results = VideosSearch(link, limit=1)
+        for result in (await results.next())["result"]:
+            duration = result["duration"]
         return duration
 
     async def thumbnail(self, link: str, videoid: Union[bool, str] = None):
@@ -185,17 +152,9 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-            
-        # FIX: Initialize variable
-        thumbnail = None
-        try:
-            results = VideosSearch(link, limit=1)
-            search_result = (await results.next())
-            if search_result and "result" in search_result and search_result["result"]:
-                for result in search_result["result"]:
-                    thumbnail = result["thumbnails"][0]["url"].split("?")[0]
-        except:
-            pass
+        results = VideosSearch(link, limit=1)
+        for result in (await results.next())["result"]:
+            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
         return thumbnail
 
     async def video(self, link: str, videoid: Union[bool, str] = None):
@@ -203,7 +162,9 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
+            
         return await get_stream_url(link, True)
+        
 
     async def playlist(self, link, limit, user_id, videoid: Union[bool, str] = None):
         if videoid:
@@ -227,27 +188,13 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-            
-        # FIX: Initialize variables
-        title = None
-        duration_min = "00:00"
-        vidid = ""
-        yturl = ""
-        thumbnail = ""
-        
-        try:
-            results = VideosSearch(link, limit=1)
-            search_result = (await results.next())
-            if search_result and "result" in search_result and search_result["result"]:
-                for result in search_result["result"]:
-                    title = result["title"]
-                    duration_min = result["duration"]
-                    vidid = result["id"]
-                    yturl = result["link"]
-                    thumbnail = result["thumbnails"][0]["url"].split("?")[0]
-        except:
-            pass
-            
+        results = VideosSearch(link, limit=1)
+        for result in (await results.next())["result"]:
+            title = result["title"]
+            duration_min = result["duration"]
+            vidid = result["id"]
+            yturl = result["link"]
+            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
         track_details = {
             "title": title,
             "link": yturl,
@@ -266,34 +213,31 @@ class YouTubeAPI:
         ydl = yt_dlp.YoutubeDL(ytdl_opts)
         with ydl:
             formats_available = []
-            try:
-                r = ydl.extract_info(link, download=False)
-                for format in r["formats"]:
+            r = ydl.extract_info(link, download=False)
+            for format in r["formats"]:
+                try:
+                    str(format["format"])
+                except:
+                    continue
+                if not "dash" in str(format["format"]).lower():
                     try:
-                        str(format["format"])
+                        format["format"]
+                        format["filesize"]
+                        format["format_id"]
+                        format["ext"]
+                        format["format_note"]
                     except:
                         continue
-                    if not "dash" in str(format["format"]).lower():
-                        try:
-                            format["format"]
-                            format["filesize"]
-                            format["format_id"]
-                            format["ext"]
-                            format["format_note"]
-                        except:
-                            continue
-                        formats_available.append(
-                            {
-                                "format": format["format"],
-                                "filesize": format["filesize"],
-                                "format_id": format["format_id"],
-                                "ext": format["ext"],
-                                "format_note": format["format_note"],
-                                "yturl": link,
-                            }
-                        )
-            except:
-                pass
+                    formats_available.append(
+                        {
+                            "format": format["format"],
+                            "filesize": format["filesize"],
+                            "format_id": format["format_id"],
+                            "ext": format["ext"],
+                            "format_note": format["format_note"],
+                            "yturl": link,
+                        }
+                    )
         return formats_available, link
 
     async def slider(
@@ -306,20 +250,13 @@ class YouTubeAPI:
             link = self.base + link
         if "&" in link:
             link = link.split("&")[0]
-            
-        try:
-            a = VideosSearch(link, limit=10)
-            search_result = (await a.next())
-            if search_result and "result" in search_result:
-                result = search_result.get("result")
-                title = result[query_type]["title"]
-                duration_min = result[query_type]["duration"]
-                vidid = result[query_type]["id"]
-                thumbnail = result[query_type]["thumbnails"][0]["url"].split("?")[0]
-                return title, duration_min, thumbnail, vidid
-        except:
-            pass
-        return None, None, None, None
+        a = VideosSearch(link, limit=10)
+        result = (await a.next()).get("result")
+        title = result[query_type]["title"]
+        duration_min = result[query_type]["duration"]
+        vidid = result[query_type]["id"]
+        thumbnail = result[query_type]["thumbnails"][0]["url"].split("?")[0]
+        return title, duration_min, thumbnail, vidid
 
     async def download(
         self,
@@ -407,29 +344,18 @@ class YouTubeAPI:
             x = yt_dlp.YoutubeDL(ydl_optssx)
             x.download([link])
 
-        try:
-            if songvideo:
-                await loop.run_in_executor(None, song_video_dl)
-                fpath = f"downloads/{title}.mp4"
-                return fpath
-            elif songaudio:
-                await loop.run_in_executor(None, song_audio_dl)
-                fpath = f"downloads/{title}.mp3"
-                return fpath
-            elif video:
-                downloaded_file = await get_stream_url(link, True)
-                direct = None
-            else:
-                direct = None
-                downloaded_file = await get_stream_url(link, False)
-                
-            # Fallback if API returns empty
-            if not downloaded_file:
-                if video:
-                     downloaded_file = await loop.run_in_executor(None, video_dl)
-                else:
-                     downloaded_file = await loop.run_in_executor(None, audio_dl)
-                
-            return downloaded_file, direct
-        except Exception as e:
-            return "", None
+        if songvideo:
+            await loop.run_in_executor(None, song_video_dl)
+            fpath = f"downloads/{title}.mp4"
+            return fpath
+        elif songaudio:
+            await loop.run_in_executor(None, song_audio_dl)
+            fpath = f"downloads/{title}.mp3"
+            return fpath
+        elif video:
+            downloaded_file = await get_stream_url(link, True)
+            direct = None
+        else:
+            direct = None
+            downloaded_file = await get_stream_url(link, False)
+        return downloaded_file, direct
