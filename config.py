@@ -92,14 +92,14 @@ autoclean = []
 confirmer = {}
 file_cache: dict[str, float] = {}
 
-START_IMG_URL = ["https://vault.pictures/p/d3be84785c25431d9d1ec9f8f5c6db9f",
-                 "https://vault.pictures/p/29211ad629894e3caced933d77d21877",
-                 "https://vault.pictures/p/4f0b7b954f3b4239bbc7fed83701bf2b"]
+START_IMG_URL = ["https://graph.org/file/9e3513de206670417d884-6529b8b9f8f6748812.jpg",
+                 "https://graph.org/file/14a26fdf7d9f744269567-ccdde447d3682b8cd3.jpg",
+                 "https://graph.org/file/cecbf4414a6b4ff48b297-482a571d7d06c437a2.jpg"]
     
 PING_IMG_URL = getenv(
-    "PING_IMG_URL", "https://vault.pictures/p/e246739d8aa145a0bd6b36a58c1317ee"
+    "PING_IMG_URL", "https://graph.org/file/062f851978de03808885f-eb92d34cde8511a7d6.jpg"
 )
-PLAYLIST_IMG_URL = "https://vault.pictures/p/b757204a524e4d2fa4f1534580425668"
+PLAYLIST_IMG_URL = "https://graph.org/file/df60a4160209a6ca58eb2-6473d069fe73f4f397.jpg"
 STATS_IMG_URL = "https://telegra.ph/file/edd388a42dd2c499fd868.jpg"
 TELEGRAM_AUDIO_URL = "https://telegra.ph/file/492a3bb2e880d19750b79.jpg"
 TELEGRAM_VIDEO_URL = "https://telegra.ph/file/492a3bb2e880d19750b79.jpg"
