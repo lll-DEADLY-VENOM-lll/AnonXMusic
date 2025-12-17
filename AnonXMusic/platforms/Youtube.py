@@ -9,8 +9,8 @@ from pyrogram.enums import MessageEntityType
 from concurrent.futures import ThreadPoolExecutor
 from youtubesearchpython.__future__ import VideosSearch, CustomSearch
 
-from AnonMusic.utils.database import is_on_off
-from AnonMusic.utils.formatters import time_to_seconds
+from AnonXMusic.utils.database import is_on_off
+from AnonXMusic.utils.formatters import time_to_seconds
 
 def cookie_txt_file():
     try:
@@ -44,11 +44,11 @@ async def shell_cmd(cmd):
 async def get_stream_url(query, video=False):
     apis = [
         {
-            "url": "https://api.vniox.store/youtube",
+            "url": "http://80.211.209.128:1470/youtube",
             "key": "VNI0X_a2o57Yg8FvtMasK"
         },
         {
-            "url": "https://api.vniox.store/youtube",
+            "url": "http://80.211.209.128:1470/youtube",
             "key": "VNI0X_a2o57Yg8FvtMasK"
         }
     ]
