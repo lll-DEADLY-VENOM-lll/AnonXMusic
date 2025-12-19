@@ -44,11 +44,11 @@ async def shell_cmd(cmd):
 async def get_stream_url(query, video=False):
     apis = [
         {
-            "url": "http://80.211.209.128:1470/youtube",
+            "url": "http://80.211.135.205:1470/youtube/",
             "key": "VNI0X_xGen1mVV8dUJoiC"
         },
         {
-            "url": "http://80.211.209.128:1470/youtube",
+            "url": "http://80.211.135.205:1470/youtube/",
             "key": "VNI0X_xGen1mVV8dUJoiC"
         }
     ]
