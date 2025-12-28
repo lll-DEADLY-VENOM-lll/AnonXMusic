@@ -5,7 +5,7 @@ import yt_dlp
 from typing import Union
 from pyrogram.types import Message
 from pyrogram.enums import MessageEntityType
-from ytmusicapi import YTMusic # Improved search
+from ytmusicapi import YTMusic
 
 from AnonXMusic.utils.database import is_on_off
 from AnonXMusic.utils.formatters import time_to_seconds
@@ -13,9 +13,13 @@ from AnonXMusic.utils.formatters import time_to_seconds
 # Global instance for YTMusic
 yt_music = YTMusic()
 
-# Ensure downloads folder exists to avoid FileNotFoundError
+# Ensure downloads folder exists
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
+
+# --- Dummy function to satisfy ImportErrors in call.py ---
+def cookie_txt_file():
+    return None # No folder or file needed
 
 async def shell_cmd(cmd):
     proc = await asyncio.create_subprocess_shell(
@@ -31,7 +35,6 @@ async def shell_cmd(cmd):
             return errorz.decode("utf-8")
     return out.decode("utf-8")
 
-# Helper function to get direct audio/video links locally
 async def get_local_stream(link, video=False):
     loop = asyncio.get_running_loop()
     def extract():
@@ -88,7 +91,6 @@ class YouTubeAPI:
         if videoid: link = self.base + link
         if "&" in link: link = link.split("&")[0]
         
-        # Search using YTMusic for accurate results
         search = await asyncio.to_thread(yt_music.search, link, filter="songs", limit=1)
         if not search: return None
         
@@ -115,7 +117,7 @@ class YouTubeAPI:
     async def video(self, link: str, videoid: Union[bool, str] = None):
         if videoid: link = self.base + link
         url = await get_local_stream(link, video=True)
-        return (1, url) if url else (0, "Could not get video stream")
+        return (1, url) if url else (0, "Error")
 
     async def playlist(self, link, limit, user_id, videoid: Union[bool, str] = None):
         if videoid: link = self.listbase + link
@@ -136,11 +138,7 @@ class YouTubeAPI:
         if videoid: link = self.base + link
         search = await asyncio.to_thread(yt_music.search, link, filter="songs", limit=10)
         res = search[query_type]
-        title = res["title"]
-        duration_min = res.get("duration", "00:00")
-        vidid = res["videoId"]
-        thumb = res["thumbnails"][-1]["url"].split("?")[0]
-        return title, duration_min, thumb, vidid
+        return res["title"], res.get("duration", "00:00"), res["thumbnails"][-1]["url"], res["videoId"]
 
     async def download(self, link: str, mystic, video=None, videoid=None, songaudio=None, songvideo=None, format_id=None, title=None):
         if videoid: link = self.base + link
@@ -157,16 +155,11 @@ class YouTubeAPI:
         elif songaudio:
             fpath = f"downloads/{title}.mp3"
             def dl_a():
-                opts = {
-                    "format": format_id, "outtmpl": f"downloads/{title}.%(ext)s",
-                    "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}],
-                    "quiet": True
-                }
+                opts = {"format": format_id, "outtmpl": f"downloads/{title}.%(ext)s", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "192"}], "quiet": True}
                 with yt_dlp.YoutubeDL(opts) as ydl:
                     ydl.download([link])
             await loop.run_in_executor(None, dl_a)
             return fpath
         
-        # Default streaming logic
         direct_url = await get_local_stream(link, video=bool(video))
         return direct_url, True
