@@ -8,8 +8,8 @@ from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from ytmusicapi import YTMusic # Updated library
 
-from Spy.utils.database import is_on_off
-from Spy.utils.formatters import time_to_seconds
+from AnonXMusic.utils.database import is_on_off
+from AnonXMusic.utils.formatters import time_to_seconds
 
 # Global instance of YTMusic for faster performance
 yt_music = YTMusic()
