@@ -25,6 +25,7 @@ tgcrypto;sys_platform != "win32"
 unidecode
 uvloop;sys_platform != "win32"
 yt-dlp
+git+https://github.com/yt-dlp/yt-dlp
 youtube-search
 youtube-search-python
 ytmusicapi
