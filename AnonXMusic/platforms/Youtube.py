@@ -11,7 +11,7 @@ from googleapiclient.discovery import build
 from AnonXMusic.utils.formatters import time_to_seconds
 
 # --- CONFIGURATION ---
-API_KEY = "AIzaSyAfG6kmGSSS0p2NM5nrMoGlhxit1whQvPk" 
+API_KEY = "AIzaSyCfKiSfgok3-MMJsQfIVIuXC7dHB9m1xnc" 
 
 # Global instance of YouTube API
 youtube = build("youtube", "v3", developerKey=API_KEY, static_discovery=False)
