@@ -1,23 +1,10 @@
 from pyrogram.types import InlineKeyboardButton
-import config
-from AnonXMusic import app
-
-def start_panel(_):
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=_["S_B_1"], url=f"https://t.me/{app.username}?startgroup=true"
-            ),
-            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT),
-        ],
-    ]
-    return buttons
 
 def private_panel(_):
     buttons = [
         [
             InlineKeyboardButton(
-                text="✚ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ᴄʜᴀᴛ ✚",
+                text="✚ ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✚",
                 url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
@@ -26,20 +13,20 @@ def private_panel(_):
                 text="sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT
             ),
             InlineKeyboardButton(
-                text="💌 ʏᴛ-ᴀᴘɪ", url=config.SUPPORT_CHANNEL # या अपना लिंक दें
+                text="ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL
             ),
         ],
         [
             InlineKeyboardButton(
-                text="ʙᴏᴛ ᴅᴏᴄ's", url=f"https://t.me/about_deadly_venom"
+                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://github.com/YourUsername" # Apna link yaha dalein
             ),
             InlineKeyboardButton(
-                text="ᴍɪɴɪ ᴀᴘᴘ", url=f"https://t.me/about_deadly_venom"
+                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/YourHandle" # Apna username yaha dalein
             ),
         ],
         [
             InlineKeyboardButton(
-                text="ʜᴇʟᴘ ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅ", callback_data="settings_back_helper"
+                text="ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs", callback_data="settings_back_helper"
             )
         ],
     ]
