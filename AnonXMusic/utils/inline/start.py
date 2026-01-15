@@ -26,15 +26,15 @@ def private_panel(_):
                 text="sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT
             ),
             InlineKeyboardButton(
-                text="💌 ʏᴛ-ᴀᴘɪ", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
+                text="💌 ʏᴛ-ᴀᴘɪ", url=config.SUPPORT_CHANNEL # या अपना लिंक दें
             ),
         ],
         [
             InlineKeyboardButton(
-                text="ʙᴏᴛ ᴅᴏᴄ's ▢", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
+                text="ʙᴏᴛ ᴅᴏᴄ's         ▢", url=f"https://t.me/about_deadly_venom"
             ),
             InlineKeyboardButton(
-                text="ᴍɪɴɪ ᴀᴘᴘ ▢", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
+                text="ᴍɪɴɪ ᴀᴘᴘ         ▢", url=f"https://t.me/about_deadly_venom"
             ),
         ],
         [
