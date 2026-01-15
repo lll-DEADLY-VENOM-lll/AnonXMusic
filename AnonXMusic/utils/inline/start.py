@@ -1,8 +1,6 @@
 from pyrogram.types import InlineKeyboardButton
-
 import config
 from AnonXMusic import app
-
 
 def start_panel(_):
     buttons = [
@@ -15,12 +13,11 @@ def start_panel(_):
     ]
     return buttons
 
-
 def private_panel(_):
     buttons = [
         [
             InlineKeyboardButton(
-                text="✚ ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✚",
+                text="✚ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ᴄʜᴀᴛ ✚",
                 url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
@@ -29,20 +26,20 @@ def private_panel(_):
                 text="sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT
             ),
             InlineKeyboardButton(
-                text="ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL
+                text="💌 ʏᴛ-ᴀᴘɪ", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
             ),
         ],
         [
             InlineKeyboardButton(
-                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://t.me/about_deadly_venom"
+                text="ʙᴏᴛ ᴅᴏᴄ's ▢", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
             ),
             InlineKeyboardButton(
-                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", user_id=config.OWNER_ID
+                text="ᴍɪɴɪ ᴀᴘᴘ ▢", url=f"https://t.me/about_deadly_venom" # यहाँ अपना लिंक डालें
             ),
         ],
         [
             InlineKeyboardButton(
-                text="ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs", callback_data="settings_back_helper"
+                text="ʜᴇʟᴘ ᴀɴᴅ ᴄᴏᴍᴍᴀɴᴅ", callback_data="settings_back_helper"
             )
         ],
     ]
