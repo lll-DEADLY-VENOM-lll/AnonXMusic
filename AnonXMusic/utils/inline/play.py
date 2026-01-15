@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardButton
 import config
 from AnonXMusic.utils.formatters import time_to_seconds
 
-# 1. बेहतर ट्रैक सिलेक्शन (Audio/Video के साथ Support Chat)
+# 1. ट्रैक सिलेक्शन बटन (जब गाना सर्च करते हैं)
 def track_markup(_, videoid, user_id, channel, fplay):
     buttons = [
         [
@@ -28,13 +28,14 @@ def track_markup(_, videoid, user_id, channel, fplay):
     ]
     return buttons
 
-# 2. एडवांस प्लेयर (Progress Bar और Control Buttons के साथ)
+# 2. एडवांस प्लेयर (बटन की साइज फिक्स की गई है)
 def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
     percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
     
+    # प्रोग्रेस बार
     if 0 < umm <= 10:
         bar = "▰▱▱▱▱▱▱▱▱▱"
     elif 10 < umm < 20:
@@ -64,13 +65,16 @@ def stream_markup_timer(_, chat_id, played, dur):
             )
         ],
         [   
-            InlineKeyboardButton(text="⏮", callback_data=f"ADMIN Replay|{chat_id}"),
-            InlineKeyboardButton(text="II ᴘᴀᴜsᴇ", callback_data=f"ADMIN Pause|{chat_id}"),
+            # एक लाइन में सिर्फ 2 बटन ताकि साइज सही रहे
+            InlineKeyboardButton(text="Ⅱ ᴘᴀᴜsᴇ", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="▶ ʀᴇsᴜᴍᴇ", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="▢ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="⏮ ʀᴇᴘʟᴀʏ", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="⏭ sᴋɪᴘ", callback_data=f"ADMIN Skip|{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(text="⏹ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
             InlineKeyboardButton(text="📜 ǫᴜᴇᴜᴇ", callback_data=f"admin_cache{chat_id}"),
         ],
         [
@@ -84,11 +88,13 @@ def stream_markup_timer(_, chat_id, played, dur):
 def stream_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text="▶", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
-            InlineKeyboardButton(text="⏭", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="Ⅱ ᴘᴀᴜsᴇ", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="▶ ʀᴇsᴜᴍᴇ", callback_data=f"ADMIN Resume|{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(text="⏮ ʀᴇᴘʟᴀʏ", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="⏭ sᴋɪᴘ", callback_data=f"ADMIN Skip|{chat_id}"),
+            InlineKeyboardButton(text="⏹ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
         [
             InlineKeyboardButton(text="✨ sᴜᴘᴘᴏʀᴛ ✨", url=config.SUPPORT_CHAT),
@@ -96,8 +102,7 @@ def stream_markup(_, chat_id):
     ]
     return buttons
 
-# --- यहाँ से नए फंक्शन्स हैं जो एरर ठीक करेंगे ---
-
+# 4. लाइव स्ट्रीम बटन
 def livestream_markup(_, videoid, user_id, mode, fplay):
     buttons = [
         [
@@ -115,6 +120,7 @@ def livestream_markup(_, videoid, user_id, mode, fplay):
     ]
     return buttons
 
+# 5. प्लेलिस्ट बटन
 def playlist_markup(_, videoid, user_id, fplay):
     buttons = [
         [
@@ -136,6 +142,7 @@ def playlist_markup(_, videoid, user_id, fplay):
     ]
     return buttons
 
+# 6. स्लाइडर बटन (सर्च रिजल्ट्स के लिए)
 def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
     query = f"{query[:20]}"
     buttons = [
