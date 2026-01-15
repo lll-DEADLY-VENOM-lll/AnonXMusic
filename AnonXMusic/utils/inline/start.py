@@ -31,10 +31,10 @@ def private_panel(_):
         ],
         [
             InlineKeyboardButton(
-                text="ʙᴏᴛ ᴅᴏᴄ's         ▢", url=f"https://t.me/about_deadly_venom"
+                text="ʙᴏᴛ ᴅᴏᴄ's", url=f"https://t.me/about_deadly_venom"
             ),
             InlineKeyboardButton(
-                text="ᴍɪɴɪ ᴀᴘᴘ         ▢", url=f"https://t.me/about_deadly_venom"
+                text="ᴍɪɴɪ ᴀᴘᴘ", url=f"https://t.me/about_deadly_venom"
             ),
         ],
         [
