@@ -1,4 +1,25 @@
 from pyrogram.types import InlineKeyboardButton
+import config
+from AnonXMusic import app
+
+def start_panel(_):
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="✚ ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✚",
+                url=f"https://t.me/{app.username}?startgroup=true",
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="ʜᴇʟᴘ", callback_data="settings_back_helper"
+            ),
+            InlineKeyboardButton(
+                text="sᴇᴛᴛɪɴɢs", callback_data="settings_helper"
+            ),
+        ],
+    ]
+    return buttons
 
 def private_panel(_):
     buttons = [
@@ -18,10 +39,10 @@ def private_panel(_):
         ],
         [
             InlineKeyboardButton(
-                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://t.me/ll_DEADLY_VENOM_ll" # Apna link yaha dalein
+                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://t.me/ll_DEADLY_VENOM_ll"
             ),
             InlineKeyboardButton(
-                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/KIRU_OP" # Apna username yaha dalein
+                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/KIRU_OP"
             ),
         ],
         [
