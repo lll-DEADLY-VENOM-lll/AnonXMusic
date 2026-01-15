@@ -18,10 +18,10 @@ def private_panel(_):
         ],
         [
             InlineKeyboardButton(
-                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://github.com/YourUsername" # Apna link yaha dalein
+                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://t.me/ll_DEADLY_VENOM_ll" # Apna link yaha dalein
             ),
             InlineKeyboardButton(
-                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/YourHandle" # Apna username yaha dalein
+                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/KIRU_OP" # Apna username yaha dalein
             ),
         ],
         [
