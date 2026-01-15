@@ -1,20 +1,26 @@
 import asyncio
 import os
 import re
+import random
 from typing import Union
 
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from googleapiclient.discovery import build 
+from googleapiclient.errors import HttpError
 
+import config # सुनिश्चित करें कि config.py सही से इम्पोर्ट हो रहा है
 from AnonXMusic.utils.formatters import time_to_seconds
 
-# --- CONFIGURATION ---
-API_KEY = "AIzaSyCfKiSfgok3-MMJsQfIVIuXC7dHB9m1xnc" 
+# --- API ROTATION LOGIC ---
+# config.py में API_KEY = "key1, key2, key3" इस तरह से लिखें
+API_KEYS = [k.strip() for k in config.API_KEY.split(",")]
 
-# Global instance of YouTube API
-youtube = build("youtube", "v3", developerKey=API_KEY, static_discovery=False)
+def get_youtube_client():
+    """रैंडम तरीके से एक API Key चुनकर क्लाइंट बनाता है"""
+    selected_key = random.choice(API_KEYS)
+    return build("youtube", "v3", developerKey=selected_key, static_discovery=False)
 
 async def shell_cmd(cmd):
     proc = await asyncio.create_subprocess_shell(
@@ -30,7 +36,7 @@ async def shell_cmd(cmd):
             return errorz.decode("utf-8")
     return out.decode("utf-8")
 
-# --- VARIABLE NAME FIXED HERE ---
+# --- COOKIES FILE SETUP ---
 cookie_txt_file = "AnonXMusic/cookies.txt"
 if not os.path.exists(cookie_txt_file):
     cookie_txt_file = None
@@ -70,15 +76,30 @@ class YouTubeAPI:
         else:
             match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11})", link)
             vidid = match.group(1) if match else None
-        if not vidid:
-            search_response = await asyncio.to_thread(youtube.search().list(q=link, part="id", maxResults=1, type="video").execute)
-            if not search_response.get("items"): return None
-            vidid = search_response["items"][0]["id"]["videoId"]
-        video_response = await asyncio.to_thread(youtube.videos().list(part="snippet,contentDetails", id=vidid).execute)
-        if not video_response.get("items"): return None
-        video_data = video_response["items"][0]
-        title, d_min, d_sec = video_data["snippet"]["title"], *self.parse_duration(video_data["contentDetails"]["duration"])
-        return title, d_min, d_sec, video_data["snippet"]["thumbnails"]["high"]["url"], vidid
+        
+        youtube = get_youtube_client() # हर बार नई Key का मौका
+        
+        try:
+            if not vidid:
+                search_response = await asyncio.to_thread(
+                    youtube.search().list(q=link, part="id", maxResults=1, type="video").execute
+                )
+                if not search_response.get("items"): return None
+                vidid = search_response["items"][0]["id"]["videoId"]
+            
+            video_response = await asyncio.to_thread(
+                youtube.videos().list(part="snippet,contentDetails", id=vidid).execute
+            )
+            if not video_response.get("items"): return None
+            video_data = video_response["items"][0]
+            title, d_min, d_sec = video_data["snippet"]["title"], *self.parse_duration(video_data["contentDetails"]["duration"])
+            return title, d_min, d_sec, video_data["snippet"]["thumbnails"]["high"]["url"], vidid
+        
+        except HttpError as e:
+            if e.resp.status == 403: # Quota Exceeded
+                print("One API Key Quota Finished, Retrying with another...")
+                return await self.details(link, videoid) # दोबारा कोशिश करें (नई key के साथ)
+            return None
 
     async def title(self, link: str, videoid: Union[bool, str] = None):
         res = await self.details(link, videoid)
@@ -115,13 +136,22 @@ class YouTubeAPI:
         return [k for k in playlist.split("\n") if k != ""]
 
     async def slider(self, link: str, query_type: int, videoid: Union[bool, str] = None):
-        search_response = await asyncio.to_thread(youtube.search().list(q=link, part="snippet", maxResults=10, type="video").execute)
-        if not search_response.get("items"): return None
-        result = search_response["items"][query_type]
-        vidid, title, thumb = result["id"]["videoId"], result["snippet"]["title"], result["snippet"]["thumbnails"]["high"]["url"]
-        video_res = await asyncio.to_thread(youtube.videos().list(part="contentDetails", id=vidid).execute)
-        d_min, _ = self.parse_duration(video_res["items"][0]["contentDetails"]["duration"])
-        return title, d_min, thumb, vidid
+        youtube = get_youtube_client()
+        try:
+            search_response = await asyncio.to_thread(
+                youtube.search().list(q=link, part="snippet", maxResults=10, type="video").execute
+            )
+            if not search_response.get("items"): return None
+            result = search_response["items"][query_type]
+            vidid, title, thumb = result["id"]["videoId"], result["snippet"]["title"], result["snippet"]["thumbnails"]["high"]["url"]
+            
+            video_res = await asyncio.to_thread(youtube.videos().list(part="contentDetails", id=vidid).execute)
+            d_min, _ = self.parse_duration(video_res["items"][0]["contentDetails"]["duration"])
+            return title, d_min, thumb, vidid
+        except HttpError as e:
+            if e.resp.status == 403:
+                return await self.slider(link, query_type, videoid)
+            return None
 
     async def download(self, link: str, mystic, video=None, videoid=None, songaudio=None, songvideo=None, format_id=None, title=None) -> str:
         if videoid: link = self.base + link
