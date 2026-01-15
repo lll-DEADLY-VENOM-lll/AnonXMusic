@@ -16,14 +16,15 @@ BOT_TOKEN = getenv("BOT_TOKEN")
 # Get your mongo url from cloud.mongodb.com
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 
+# -----------------------------------------------------------------
+# YOUTUBE API KEYS (MULTI-KEY SUPPORT)
+# यहाँ अपनी सभी Keys को कोमा (,) लगाकर डालें। 
+# उदाहरण: "key1, key2, key3"
+# -----------------------------------------------------------------
+API_KEY = getenv("API_KEY", "AIzaSyCfKiSfgok3-MMJsQfIVIuXC7dHB9m1xnc, Key2_Yaha_Dale, Key3_Yaha_Dale")
+# -----------------------------------------------------------------
 
-########################################################## NOTE YOUTUBE KEY INFORMATION JOIN - @HEROKU_CLUB ##########################################################
-########################################################## YOUTUBE API BOT FIND FREE KEY USE - @VnioxApiHubBot #######################################################
-# YOUTUBE KEY YOUTUBE.PY ME ADD KRNA H 
-#  ADD YOUTUBE API KEY LINE NO 53 AND 57 
-
-
-## Other vaes
+## Other vars
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
 
 # Chat id of a group for logging bot's activities
@@ -67,7 +68,6 @@ PLAYLIST_FETCH_LIMIT = int(getenv("PLAYLIST_FETCH_LIMIT", 25))
 # Telegram audio and video file size limit (in bytes)
 TG_AUDIO_FILESIZE_LIMIT = int(getenv("TG_AUDIO_FILESIZE_LIMIT", 204857600))
 TG_VIDEO_FILESIZE_LIMIT = int(getenv("TG_VIDEO_FILESIZE_LIMIT", 2073741824))
-# Checkout https://www.gbmb.org/mb-to-bytes for converting mb to bytes
 
 PRIVATE_BOT_MODE_MEM = int(getenv("PRIVATE_BOT_MODE_MEM", 1))
 
@@ -130,4 +130,4 @@ if SUPPORT_CHAT:
     if not re.match("(?:http|https)://", SUPPORT_CHAT):
         raise SystemExit(
             "[ERROR] - Your SUPPORT_CHAT url is wrong. Please ensure that it starts with https://"
-        )
+)
