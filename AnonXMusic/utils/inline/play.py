@@ -35,7 +35,6 @@ def stream_markup_timer(_, chat_id, played, dur):
     percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
     
-    # प्रोग्रेस बार को और सुंदर बनाया गया है
     if 0 < umm <= 10:
         bar = "▰▱▱▱▱▱▱▱▱▱"
     elif 10 < umm < 20:
@@ -72,7 +71,7 @@ def stream_markup_timer(_, chat_id, played, dur):
         ],
         [
             InlineKeyboardButton(text="▢ sᴛᴏᴘ", callback_data=f"ADMIN Stop|{chat_id}"),
-            InlineKeyboardButton(text="📜 ǫᴜᴇᴜᴇ", callback_data=f"admin_cache{chat_id}"), # Queue देखने के लिए
+            InlineKeyboardButton(text="📜 ǫᴜᴇᴜᴇ", callback_data=f"admin_cache{chat_id}"),
         ],
         [
             InlineKeyboardButton(text="🚀 sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT),
@@ -97,4 +96,72 @@ def stream_markup(_, chat_id):
     ]
     return buttons
 
-# बाकी के फंक्शन्स (playlist, livestream, slider) आप पहले वाले ही इस्तेमाल कर सकते हैं।
+# --- यहाँ से नए फंक्शन्स हैं जो एरर ठीक करेंगे ---
+
+def livestream_markup(_, videoid, user_id, mode, fplay):
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="🎥 ᴊᴏɪɴ ʟɪᴠᴇ",
+                callback_data=f"LiveStream {videoid}|{user_id}|{mode}|{fplay}",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🗑 ᴄʟᴏsᴇ",
+                callback_data=f"forceclose {videoid}|{user_id}",
+            ),
+        ],
+    ]
+    return buttons
+
+def playlist_markup(_, videoid, user_id, fplay):
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="🎵 ᴀᴜᴅɪᴏ",
+                callback_data=f"AnonPlaylists {videoid}|{user_id}|a|{fplay}",
+            ),
+            InlineKeyboardButton(
+                text="🎥 ᴠɪᴅᴇᴏ",
+                callback_data=f"AnonPlaylists {videoid}|{user_id}|v|{fplay}",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🗑 ᴄʟᴏsᴇ",
+                callback_data=f"forceclose {videoid}|{user_id}",
+            ),
+        ],
+    ]
+    return buttons
+
+def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
+    query = f"{query[:20]}"
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="🎵 ᴀᴜᴅɪᴏ",
+                callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
+            ),
+            InlineKeyboardButton(
+                text="🎥 ᴠɪᴅᴇᴏ",
+                callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="❮",
+                callback_data=f"slider B|{query_type}|{query}|{user_id}|{channel}|{fplay}",
+            ),
+            InlineKeyboardButton(
+                text="🗑 ᴄʟᴏsᴇ",
+                callback_data=f"forceclose {videoid}|{user_id}",
+            ),
+            InlineKeyboardButton(
+                text="❯",
+                callback_data=f"slider F|{query_type}|{query}|{user_id}|{channel}|{fplay}",
+            ),
+        ],
+    ]
+    return buttons
