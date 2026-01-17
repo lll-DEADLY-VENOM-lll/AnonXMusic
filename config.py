@@ -23,7 +23,6 @@ MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 # -----------------------------------------------------------------
 API_KEY = getenv("API_KEY", ("AIzaSyC25uAJjYyGLAsgbmgmpanppJz7e5goQ2Y")
 # -----------------------------------------------------------------
-
 ## Other vars
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
 
