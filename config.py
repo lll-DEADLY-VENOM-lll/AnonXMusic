@@ -21,7 +21,7 @@ MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 # यहाँ अपनी सभी Keys को कोमा (,) लगाकर डालें। 
 # उदाहरण: "key1, key2, key3"
 # -----------------------------------------------------------------
-API_KEY = getenv("API_KEY", ("AIzaSyC25uAJjYyGLAsgbmgmpanppJz7e5goQ2Y")
+API_KEY = getenv("API_KEY", ("AIzaSyC25uAJjYyGLAsgbmgmpanppJz7e5goQ2Y, AIzaSyCkPefpQGEGaTMN76CU9Hs8RYYaN3CPDtA")
 # -----------------------------------------------------------------
 ## Other vars
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 300))
