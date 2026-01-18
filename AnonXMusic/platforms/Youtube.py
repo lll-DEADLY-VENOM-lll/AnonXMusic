@@ -15,7 +15,7 @@ from AnonXMusic.utils.formatters import time_to_seconds
 
 # --- API ROTATION LOGIC ---
 # config.py में API_KEY = "key1, key2, key3" इस तरह से लिखें
-API_KEYS = [k.strip() for k in config.API_KEY.split(",")]
+API_KEYS = [k.strip() for k in config.API_KEY.split("")]
 
 def get_youtube_client():
     """रैंडम तरीके से एक API Key चुनकर क्लाइंट बनाता है"""
