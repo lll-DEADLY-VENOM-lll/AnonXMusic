@@ -7,7 +7,7 @@ ffmpeg-python
 gitpython
 hachoir
 heroku3
-httpx==0.27.2
+httpx==0.28.1
 motor
 numpy
 opencv-python
@@ -25,7 +25,7 @@ pymongo==3.12.0
 tgcrypto;sys_platform != "win32"
 unidecode
 uvloop;sys_platform != "win32"
-git+https://github.com/yt-dlp/yt-dlp
-youtube-search
-youtube-search-python
-ytmusicapi
+yt-dlp
+aria2
+safoneAPI
+oauth2client
