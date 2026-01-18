@@ -13,12 +13,13 @@ from googleapiclient.errors import HttpError
 import config 
 from AnonXMusic.utils.formatters import time_to_seconds
 
+# --- COOKIE PATH (Import error solve karne ke liye) ---
+cookie_txt_file = os.path.join("cookies", "cookies.txt")
+
 # --- SMART API ROTATION LOGIC ---
-# Agar config mein API_KEY nahi hai toh empty list banayega taaki crash na ho
 if hasattr(config, "API_KEY") and config.API_KEY:
     API_KEYS = [k.strip() for k in config.API_KEY.split(",")]
 else:
-    # Yahan default empty list ya error handling
     API_KEYS = []
     print("WARNING: API_KEY is missing in your config file or .env!")
 
