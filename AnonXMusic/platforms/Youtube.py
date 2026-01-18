@@ -13,22 +13,12 @@ from googleapiclient.errors import HttpError
 import config 
 from AnonXMusic.utils.formatters import time_to_seconds
 
-# --- COOKIE PATH (Import error solve karne ke liye) ---
-cookie_txt_file = os.path.join("cookies", "cookies.txt")
-
-# --- SMART API ROTATION LOGIC ---
-if hasattr(config, "API_KEY") and config.API_KEY:
-    API_KEYS = [k.strip() for k in config.API_KEY.split(",")]
-else:
-    API_KEYS = []
-    print("WARNING: API_KEY is missing in your config file or .env!")
-
+# --- SMART API ROTATION LOGIC (ONLY API, NO COOKIES) ---
+API_KEYS = [k.strip() for k in config.API_KEY.split(",")]
 API_INDEX = 0 
 
 def get_youtube_client():
     global API_INDEX
-    if not API_KEYS:
-        return None
     selected_key = API_KEYS[API_INDEX]
     return build("youtube", "v3", developerKey=selected_key, static_discovery=False)
 
@@ -77,9 +67,6 @@ class YouTubeAPI:
 
     async def details(self, link: str, videoid: Union[bool, str] = None):
         global API_INDEX
-        if not API_KEYS:
-            return None
-            
         if videoid: vidid = link
         else:
             match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11})", link)
@@ -87,7 +74,6 @@ class YouTubeAPI:
         
         for _ in range(len(API_KEYS)):
             youtube = get_youtube_client() 
-            if not youtube: break
             try:
                 if not vidid:
                     search_response = await asyncio.to_thread(
@@ -133,6 +119,7 @@ class YouTubeAPI:
 
     async def video(self, link: str, videoid: Union[bool, str] = None):
         if videoid: link = self.base + link
+        # No Cookies used here
         opts = ["yt-dlp", "-g", "-f", "best[height<=?480][ext=mp4]/best", "--no-playlist", "--geo-bypass", f"{link}"]
         proc = await asyncio.create_subprocess_exec(*opts, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         stdout, stderr = await proc.communicate()
@@ -140,15 +127,14 @@ class YouTubeAPI:
 
     async def playlist(self, link, limit, user_id, videoid: Union[bool, str] = None):
         if videoid: link = self.listbase + link
+        # No Cookies used here
         playlist = await shell_cmd(f"yt-dlp -i --get-id --flat-playlist --playlist-end {limit} --skip-download {link}")
         return [k for k in playlist.split("\n") if k != ""]
 
     async def slider(self, link: str, query_type: int, videoid: Union[bool, str] = None):
         global API_INDEX
-        if not API_KEYS: return None
         for _ in range(len(API_KEYS)):
             youtube = get_youtube_client()
-            if not youtube: break
             try:
                 search_response = await asyncio.to_thread(
                     youtube.search().list(q=link, part="snippet", maxResults=10, type="video").execute
@@ -170,6 +156,7 @@ class YouTubeAPI:
     async def download(self, link: str, mystic, video=None, videoid=None, songaudio=None, songvideo=None, format_id=None, title=None) -> str:
         if videoid: link = self.base + link
         loop = asyncio.get_running_loop()
+        # Clean common_opts without cookies
         common_opts = {"geo_bypass": True, "nocheckcertificate": True, "quiet": True, "no_warnings": True}
 
         def audio_dl():
