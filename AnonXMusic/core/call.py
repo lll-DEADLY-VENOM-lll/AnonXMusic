@@ -10,8 +10,8 @@ from pytgcalls.exceptions import (
     NoActiveGroupCall,
 )
 from ntgcalls import TelegramServerError
-from pytgcalls.types import Update
-import pytgcalls.filters as fl
+from pytgcalls.types import Update, StreamEnded
+from pytgcalls import filters as fl
 from pytgcalls.types import AudioQuality, VideoQuality
 from pytgcalls.types import MediaStream,ChatUpdate
 
@@ -36,6 +36,7 @@ from AnonXMusic.utils.formatters import check_duration, seconds_to_min, speed_co
 from AnonXMusic.utils.inline.play import stream_markup
 from AnonXMusic.utils.thumbnails import get_thumb
 from strings import get_string
+from AnonXMusic.platforms.Youtube import cookie_txt_file
 
 autoend = {}
 counter = {}
