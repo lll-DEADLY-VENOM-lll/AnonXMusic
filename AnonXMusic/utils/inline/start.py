@@ -35,7 +35,7 @@ def private_panel(_):
             InlineKeyboardButton(text="🛠 ᴅᴇᴠ", user_id=config.OWNER_ID[0]), # Owner link
         ],
         [
-            InlineKeyboardButton(text="❄️ sᴏᴜʀᴄᴇ", url=f"https://github.com/TheAloneTeam/AloneMusic"),
+            InlineKeyboardButton(text="❄️ sᴏᴜʀᴄᴇ", url=f"https://t.me/HEROKU_CLUB"),
             InlineKeyboardButton(text="💌 ʏᴛ-ᴀᴘɪ", callback_data="bot_info_data"),
         ],
     ]
