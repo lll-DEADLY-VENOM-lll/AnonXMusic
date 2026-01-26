@@ -2,8 +2,8 @@ import math
 
 from pyrogram.types import InlineKeyboardButton
 
-from AloneMusic import app
-from AloneMusic.utils.formatters import time_to_seconds
+from AloneXMusic import app
+from AloneXMusic.utils.formatters import time_to_seconds
 
 
 def track_markup(_, videoid, user_id, channel, fplay):
