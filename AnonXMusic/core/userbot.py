@@ -1,13 +1,10 @@
 import sys
 from pyrogram import Client
-
 import config
-
 from ..logging import LOGGER
 
 assistants = []
 assistantids = []
-
 
 class Userbot(Client):
     def __init__(self):
@@ -58,10 +55,7 @@ class Userbot(Client):
             except:
                 pass
             assistants.append(1)
-            try:
-                await self.one.send_message(config.LOGGER_ID, "Assistant Started")
-            except:
-                LOGGER(__name__).error("Assistant 1 could not access log group.")
+            # Log Group message skip kar diya gaya hai
             
             self.one.id = self.one.me.id
             self.one.name = self.one.me.mention
@@ -77,10 +71,6 @@ class Userbot(Client):
             except:
                 pass
             assistants.append(2)
-            try:
-                await self.two.send_message(config.LOGGER_ID, "Assistant Started")
-            except:
-                pass
             
             self.two.id = self.two.me.id
             self.two.name = self.two.me.mention
@@ -96,10 +86,6 @@ class Userbot(Client):
             except:
                 pass
             assistants.append(3)
-            try:
-                await self.three.send_message(config.LOGGER_ID, "Assistant Started")
-            except:
-                pass
             
             self.three.id = self.three.me.id
             self.three.name = self.three.me.mention
@@ -115,10 +101,6 @@ class Userbot(Client):
             except:
                 pass
             assistants.append(4)
-            try:
-                await self.four.send_message(config.LOGGER_ID, "Assistant Started")
-            except:
-                pass
             
             self.four.id = self.four.me.id
             self.four.name = self.four.me.mention
@@ -134,10 +116,6 @@ class Userbot(Client):
             except:
                 pass
             assistants.append(5)
-            try:
-                await self.five.send_message(config.LOGGER_ID, "Assistant Started")
-            except:
-                pass
             
             self.five.id = self.five.me.id
             self.five.name = self.five.me.mention
