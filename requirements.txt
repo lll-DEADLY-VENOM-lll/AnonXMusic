@@ -29,3 +29,6 @@ yt-dlp
 aria2
 safoneAPI
 oauth2client
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
