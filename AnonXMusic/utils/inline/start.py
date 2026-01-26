@@ -3,7 +3,7 @@ import config
 from AnonXMusic import app
 
 def start_panel(_):
-    # Yeh buttons tab dikhenge jab bot group mein start kiya jaye
+    # Yeh buttons tab dikhenge jab bot GROUP mein /start kiya jaye
     buttons = [
         [
             InlineKeyboardButton(
@@ -12,31 +12,30 @@ def start_panel(_):
         ],
         [
             InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT),
-            InlineKeyboardButton(text="📢 ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL), # Extra button
+            InlineKeyboardButton(text="📢 ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL),
         ],
     ]
     return buttons
 
-
 def private_panel(_):
-    # Yeh buttons tab dikhenge jab bot private (DM) mein start kiya jaye
+    # Yeh buttons tab dikhenge jab bot PRIVATE (DM) mein /start kiya jaye
     buttons = [
         [
             InlineKeyboardButton(
-                text=_["S_B_3"], # Add me to your group
+                text=_["S_B_3"], # Text: Add me to your group
                 url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
         [
-            InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper"), # Help & Commands
+            InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper"), # Text: Help & Commands
         ],
         [
-            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT), # Support Group
-            InlineKeyboardButton(text="🛠 ᴅᴇᴠ", user_id=config.OWNER_ID[0]), # Owner link
+            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT), # Support
+            InlineKeyboardButton(text="🛠 ᴅᴇᴠ", user_id=config.OWNER_ID[0]), # Owner Profile
         ],
         [
-            InlineKeyboardButton(text="❄️ sᴏᴜʀᴄᴇ", url=f"https://t.me/HEROKU_CLUB"),
-            InlineKeyboardButton(text="💌 ʏᴛ-ᴀᴘɪ", callback_data="bot_info_data"),
+            InlineKeyboardButton(text="❄️ sᴏᴜʀᴄᴇ", url=f"https://t.me/HEROKU_CLUB"), # Source Code link
+            InlineKeyboardButton(text="💌 ʏᴛ-ᴀᴘɪ", callback_data="bot_info_data"), # Extra Info
         ],
     ]
     return buttons
