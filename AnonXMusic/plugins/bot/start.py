@@ -7,15 +7,15 @@ from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 import config
-from AloneMusic import app
-from AloneMusic.misc import _boot_
-from AloneMusic.plugins.sudo.sudoers import sudoers_list
-from AloneMusic.utils.database import (add_served_chat, add_served_user,
+from AloneXMusic import app
+from AloneXMusic.misc import _boot_
+from AloneXMusic.plugins.sudo.sudoers import sudoers_list
+from AloneXMusic.utils.database import (add_served_chat, add_served_user,
                                        blacklisted_chats, get_lang,
                                        is_banned_user, is_on_off)
-from AloneMusic.utils.decorators.language import LanguageStart
-from AloneMusic.utils.formatters import get_readable_time
-from AloneMusic.utils.inline import help_pannel, private_panel, start_panel
+from AloneXMusic.utils.decorators.language import LanguageStart
+from AloneXMusic.utils.formatters import get_readable_time
+from AloneXMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
