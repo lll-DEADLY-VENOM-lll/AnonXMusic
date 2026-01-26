@@ -35,7 +35,7 @@ def private_panel(_):
         ],
         [
             InlineKeyboardButton(text="🚑 sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT),
-            InlineKeyboardButton(text="📜 ᴜᴘᴅᴀᴛᴇ", url=f"http://Heroku_Club"),
+            InlineKeyboardButton(text="📜 ᴜᴘᴅᴀᴛᴇ", url=f"https://t.me/heroku_club"),
         ],
         [
             InlineKeyboardButton(text="💎 ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL),
