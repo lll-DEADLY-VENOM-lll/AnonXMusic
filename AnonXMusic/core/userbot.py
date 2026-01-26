@@ -1,4 +1,3 @@
-import sys
 from pyrogram import Client
 import config
 from ..logging import LOGGER
@@ -8,128 +7,66 @@ assistantids = []
 
 class Userbot(Client):
     def __init__(self):
-        self.one = Client(
-            name="AnonXAss1",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            session_string=str(config.STRING1),
-            no_updates=True,
-        )
-        self.two = Client(
-            name="AnonXAss2",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            session_string=str(config.STRING2),
-            no_updates=True,
-        )
-        self.three = Client(
-            name="AnonXAss3",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            session_string=str(config.STRING3),
-            no_updates=True,
-        )
-        self.four = Client(
-            name="AnonXAss4",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            session_string=str(config.STRING4),
-            no_updates=True,
-        )
-        self.five = Client(
-            name="AnonXAss5",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            session_string=str(config.STRING5),
-            no_updates=True,
-        )
+        self.clients = []
+        # सभी sessions को एक लिस्ट में डाल दिया
+        self.sessions = [
+            config.STRING1, 
+            config.STRING2, 
+            config.STRING3, 
+            config.STRING4, 
+            config.STRING5
+        ]
+
+        # लूप के ज़रिये क्लाइंट्स सेटअप करना
+        for i, session in enumerate(self.sessions, start=1):
+            if session:
+                client = Client(
+                    name=f"AviaxAss{i}",
+                    api_id=config.API_ID,
+                    api_hash=config.API_HASH,
+                    session_string=str(session),
+                    no_updates=True,
+                )
+                self.clients.append(client)
+                # self.one, self.two आदि सेट करना ताकि पुराना कोड न टूटे
+                setattr(self, ["one", "two", "three", "four", "five"][i-1], client)
 
     async def start(self):
-        LOGGER(__name__).info(f"Starting Assistants...")
+        LOGGER(__name__).info("Assistants चालू हो रहे हैं...")
         
-        # Assistant 1
-        if config.STRING1:
-            await self.one.start()
-            try:
-                await self.one.join_chat("GOD_HYPER_O_P")
-            except:
-                pass
-            assistants.append(1)
-            # Log Group message skip kar diya gaya hai
+        for i, client in enumerate(self.clients, start=1):
+            await client.start()
             
-            self.one.id = self.one.me.id
-            self.one.name = self.one.me.mention
-            self.one.username = self.one.me.username if self.one.me.username else "No Username"
-            assistantids.append(self.one.id)
-            LOGGER(__name__).info(f"Assistant Started as {self.one.name}")
+            # ऑटोमैटिक ग्रुप जॉइनिंग (बिना किसी गलती के)
+            try:
+                await client.join_chat("HEROKUoCLUB")
+                await client.join_chat("NOBITA_SUPPORT")
+            except Exception as e:
+                LOGGER(__name__).warning(f"Assistant {i} ग्रुप जॉइन नहीं कर पाया: {e}")
 
-        # Assistant 2
-        if config.STRING2:
-            await self.two.start()
+            # लॉग ग्रुप में मैसेज भेजना
             try:
-                await self.two.join_chat("GOD_HYPER_O_P")
-            except:
-                pass
-            assistants.append(2)
-            
-            self.two.id = self.two.me.id
-            self.two.name = self.two.me.mention
-            self.two.username = self.two.me.username if self.two.me.username else "No Username"
-            assistantids.append(self.two.id)
-            LOGGER(__name__).info(f"Assistant Two Started as {self.two.name}")
+                await client.send_message(config.LOG_GROUP_ID, f"Assistant {i} Started ✅")
+            except Exception:
+                LOGGER(__name__).error(
+                    f"Assistant {i} लॉग ग्रुप को एक्सेस नहीं कर पाया। कृपया उसे एडमिन बनाएं!"
+                )
+                if i == 1: exit() # अगर पहला असिस्टेंट फ़ेल हो तो बंद करें
 
-        # Assistant 3
-        if config.STRING3:
-            await self.three.start()
-            try:
-                await self.three.join_chat("GOD_HYPER_O_P")
-            except:
-                pass
-            assistants.append(3)
+            # डेटा सेव करना
+            client.id = client.me.id
+            client.name = client.me.mention
+            client.username = client.me.username
             
-            self.three.id = self.three.me.id
-            self.three.name = self.three.me.mention
-            self.three.username = self.three.me.username if self.three.me.username else "No Username"
-            assistantids.append(self.three.id)
-            LOGGER(__name__).info(f"Assistant Three Started as {self.three.name}")
-
-        # Assistant 4
-        if config.STRING4:
-            await self.four.start()
-            try:
-                await self.four.join_chat("GOD_HYPER_O_P")
-            except:
-                pass
-            assistants.append(4)
+            assistants.append(i)
+            assistantids.append(client.id)
             
-            self.four.id = self.four.me.id
-            self.four.name = self.four.me.mention
-            self.four.username = self.four.me.username if self.four.me.username else "No Username"
-            assistantids.append(self.four.id)
-            LOGGER(__name__).info(f"Assistant Four Started as {self.four.name}")
-
-        # Assistant 5
-        if config.STRING5:
-            await self.five.start()
-            try:
-                await self.five.join_chat("HEROKU_CLUB")
-            except:
-                pass
-            assistants.append(5)
-            
-            self.five.id = self.five.me.id
-            self.five.name = self.five.me.mention
-            self.five.username = self.five.me.username if self.five.me.username else "No Username"
-            assistantids.append(self.five.id)
-            LOGGER(__name__).info(f"Assistant Five Started as {self.five.name}")
+            LOGGER(__name__).info(f"Assistant {i} चालू हो गया: {client.name}")
 
     async def stop(self):
-        LOGGER(__name__).info(f"Stopping Assistants...")
-        try:
-            if config.STRING1: await self.one.stop()
-            if config.STRING2: await self.two.stop()
-            if config.STRING3: await self.three.stop()
-            if config.STRING4: await self.four.stop()
-            if config.STRING5: await self.five.stop()
-        except:
-            pass
+        LOGGER(__name__).info("Assistants बंद हो रहे हैं...")
+        for client in self.clients:
+            try:
+                await client.stop()
+            except Exception:
+                pass
