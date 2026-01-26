@@ -1,6 +1,6 @@
 from pyrogram.types import InlineKeyboardButton
 import config
-from AloneXMusic import app
+from AnonXMusic import app
 
 def start_panel(_):
     # Yeh buttons tab dikhenge jab bot group mein start kiya jaye
