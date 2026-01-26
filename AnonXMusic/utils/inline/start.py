@@ -1,54 +1,42 @@
 from pyrogram.types import InlineKeyboardButton
 import config
-from AnonXMusic import app
+from AloneMusic import app
 
 def start_panel(_):
+    # Yeh buttons tab dikhenge jab bot group mein start kiya jaye
     buttons = [
         [
             InlineKeyboardButton(
-                text="✚ ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✚",
-                url=f"https://t.me/{app.username}?startgroup=true",
-            )
+                text=_["S_B_1"], url=f"https://t.me/{app.username}?startgroup=true"
+            ),
         ],
         [
-            InlineKeyboardButton(
-                text="ʜᴇʟᴘ", callback_data="settings_back_helper"
-            ),
-            InlineKeyboardButton(
-                text="sᴇᴛᴛɪɴɢs", callback_data="settings_helper"
-            ),
+            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT),
+            InlineKeyboardButton(text="📢 ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL), # Extra button
         ],
     ]
     return buttons
 
+
 def private_panel(_):
+    # Yeh buttons tab dikhenge jab bot private (DM) mein start kiya jaye
     buttons = [
         [
             InlineKeyboardButton(
-                text="✚ ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✚",
+                text=_["S_B_3"], # Add me to your group
                 url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
         [
-            InlineKeyboardButton(
-                text="sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT
-            ),
-            InlineKeyboardButton(
-                text="ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL
-            ),
+            InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper"), # Help & Commands
         ],
         [
-            InlineKeyboardButton(
-                text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ", url=f"https://t.me/ll_DEADLY_VENOM_ll"
-            ),
-            InlineKeyboardButton(
-                text="ᴅᴇᴠᴇʟᴏᴘᴇʀ", url=f"https://t.me/KIRU_OP"
-            ),
+            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT), # Support Group
+            InlineKeyboardButton(text="🛠 ᴅᴇᴠ", user_id=config.OWNER_ID[0]), # Owner link
         ],
         [
-            InlineKeyboardButton(
-                text="ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅs", callback_data="settings_back_helper"
-            )
+            InlineKeyboardButton(text="❄️ sᴏᴜʀᴄᴇ", url=f"https://github.com/TheAloneTeam/AloneMusic"),
+            InlineKeyboardButton(text="💌 ʏᴛ-ᴀᴘɪ", callback_data="bot_info_data"),
         ],
     ]
     return buttons
