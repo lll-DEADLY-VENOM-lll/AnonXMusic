@@ -13,21 +13,20 @@ logger = LOGGER(__name__)
 
 class YouTubeAPI:
     def __init__(self):
-        # Primary API and Backup API
+        # Nayi aur stable APIs ka collection
         self.api_list = [
-            "https://jiosaavn-apii.shivampatel425685.workers.dev",
-            "https://saavn.me", # Backup API
-            "https://jiosaavn-api-beta.vercel.app" # 2nd Backup
+            "https://saavn.dev", # Sabse stable filhal
+            "https://jiosaavn-api-v3.vercel.app",
+            "https://jiosaavn-apii.shivampatel425685.workers.dev"
         ]
         self.regex = r"(?:youtube\.com|youtu\.be|saavn\.com|jiosaavn\.com)"
         self.base = "https://www.youtube.com/watch?v="
 
     def clean_query(self, query):
-        """Faltu words ko hatane ke liye"""
         query = str(query).lower()
-        # Remove extra symbols and common junk words
-        junk_words = ["full code", "lyrics", "mp3", "download", "video", "audio", "»"]
-        for word in junk_words:
+        # Sirf zaruri words rakhein
+        junk = ["full code", "lyrics", "mp3", "download", "video", "audio", "»", "song"]
+        for word in junk:
             query = query.replace(word, "")
         return query.strip()
 
@@ -50,36 +49,46 @@ class YouTubeAPI:
                     return (message.text or message.caption)[entity.offset : entity.offset + entity.length]
         return None
 
+    async def fetch_data(self, url):
+        """Surakshit tareeke se JSON data nikalne ke liye"""
+        try:
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(None, lambda: requests.get(url, timeout=7))
+            
+            # Check karein ki response JSON hai ya nahi
+            if response.status_code == 200:
+                try:
+                    return response.json()
+                except ValueError:
+                    logger.error(f"API returned non-JSON response from {url}")
+                    return None
+            return None
+        except Exception as e:
+            logger.error(f"Fetch Error: {e}")
+            return None
+
     async def details(self, link: str, videoid: Union[bool, str] = None):
         search_query = self.clean_query(link)
         encoded_query = quote(search_query)
-        
         default_res = (f"Searching: {search_query}", "00:00", 0, "https://telegra.ph/file/default_thumb.png", "none")
 
-        # Try multiple APIs if one fails
         for api in self.api_list:
-            try:
-                search_url = f"{api}/search/songs?query={encoded_query}" if "saavn.me" in api else f"{api}/search?query={encoded_query}"
+            # Kuch APIs /search?query use karti hain, kuch /api/search
+            search_url = f"{api}/api/search/songs?query={encoded_query}" if "saavn.dev" in api else f"{api}/search?query={encoded_query}"
+            
+            data = await self.fetch_data(search_url)
+            if data and data.get("status") == "SUCCESS":
+                results = data.get("data")
+                if isinstance(results, dict): results = results.get("results")
                 
-                loop = asyncio.get_event_loop()
-                response = await loop.run_in_executor(None, lambda: requests.get(search_url, timeout=5).json())
-                
-                if response.get("status") == "SUCCESS":
-                    data = response.get("data")
-                    results = data.get("results") if isinstance(data, dict) else data
-                    
-                    if results and len(results) > 0:
-                        song = results[0]
-                        title = song.get("name", "Unknown Song")
-                        duration_str, duration_sec = self.format_duration(song.get("duration", 0))
-                        images = song.get("image", [])
-                        thumb = images[-1]["link"] if images else default_res[3]
-                        vidid = song.get("id", "none")
-                        return title, duration_str, duration_sec, thumb, vidid
-            except Exception as e:
-                logger.error(f"API {api} failed: {e}")
-                continue # Try next API
-
+                if results and len(results) > 0:
+                    song = results[0]
+                    title = song.get("name", "Unknown")
+                    d_str, d_sec = self.format_duration(song.get("duration", 0))
+                    images = song.get("image", [])
+                    thumb = images[-1]["link"] if images else default_res[3]
+                    return title, d_str, d_sec, thumb, song.get("id", "none")
+        
         return default_res
 
     async def track(self, link: str, videoid: Union[bool, str] = None):
@@ -99,18 +108,14 @@ class YouTubeAPI:
         encoded_query = quote(search_query)
 
         for api in self.api_list:
-            try:
-                search_url = f"{api}/search/songs?query={encoded_query}" if "saavn.me" in api else f"{api}/search?query={encoded_query}"
-                loop = asyncio.get_event_loop()
-                response = await loop.run_in_executor(None, lambda: requests.get(search_url, timeout=5).json())
-                
-                if response.get("status") == "SUCCESS":
-                    data = response.get("data")
-                    results = data.get("results") if isinstance(data, dict) else data
-                    if results and results[0].get("downloadUrl"):
-                        return 1, results[0]["downloadUrl"][-1]["link"]
-            except:
-                continue
+            search_url = f"{api}/api/search/songs?query={encoded_query}" if "saavn.dev" in api else f"{api}/search?query={encoded_query}"
+            data = await self.fetch_data(search_url)
+            
+            if data and data.get("status") == "SUCCESS":
+                results = data.get("data")
+                if isinstance(results, dict): results = results.get("results")
+                if results and results[0].get("downloadUrl"):
+                    return 1, results[0]["downloadUrl"][-1]["link"]
         return 0, "No Link Found"
 
     async def download(self, link: str, mystic, video=None, videoid=None, songaudio=None, songvideo=None, format_id=None, title=None) -> str:
