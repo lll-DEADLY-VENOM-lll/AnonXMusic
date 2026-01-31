@@ -24,7 +24,7 @@ class YouTubeAPI:
             secs = seconds % 60
             return f"{mins:02d}:{secs:02d}", seconds
         except:
-            return "03:30", 210 # Default duration if fails
+            return "00:00", 0
 
     async def exists(self, link: str, videoid: Union[bool, str] = None):
         return bool(re.search(self.regex, link))
@@ -37,51 +37,38 @@ class YouTubeAPI:
         return None
 
     async def details(self, link: str, videoid: Union[bool, str] = None):
+        """Hamesha 5 values return karega, chahe gaana mile ya na mile"""
+        default_res = ("Unknown Song", "00:00", 0, "https://telegra.ph/file/default_thumb.png", "none")
         try:
-            # URL Encoding taaki special characters se error na aaye
-            search_query = quote(link)
+            # Clean search query
+            search_query = quote(str(link).split("»")[0].strip()) 
             search_url = f"{self.api_base}/search?query={search_query}"
             
             loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(None, lambda: requests.get(search_url).json())
+            response = await loop.run_in_executor(None, lambda: requests.get(search_url, timeout=10).json())
             
-            # API Response structure check
             if response.get("status") == "SUCCESS":
                 data = response.get("data")
-                # Kuch versions mein data['results'] hota hai, kuch mein direct data list hoti hai
                 results = data.get("results") if isinstance(data, dict) else data
                 
                 if results and len(results) > 0:
                     song = results[0]
-                    title = song.get("name", "Unknown Song")
+                    title = song.get("name", "Unknown")
                     duration_str, duration_sec = self.format_duration(song.get("duration", 0))
-                    
-                    # Image quality check
                     images = song.get("image", [])
-                    thumb = images[-1]["link"] if images else "https://telegra.ph/file/default_thumb.png"
-                    
-                    vidid = song.get("id", "12345")
+                    thumb = images[-1]["link"] if images else default_res[3]
+                    vidid = song.get("id", "none")
                     return title, duration_str, duration_sec, thumb, vidid
             
             logger.warning(f"No results found for: {link}")
-            return None
+            return default_res
         except Exception as e:
-            logger.error(f"Error in details: {e}")
-            return None
+            logger.error(f"Details Error: {e}")
+            return default_res
 
     async def track(self, link: str, videoid: Union[bool, str] = None):
-        res = await self.details(link, videoid)
-        if not res:
-            # AGAR GAANA NA MILE, TO ERROR SE BACHNE KE LIYE DUMMY DATA
-            return {
-                "title": "Song Not Found",
-                "link": link,
-                "vidid": "none",
-                "duration_min": "00:00",
-                "thumb": "https://telegra.ph/file/default_thumb.png",
-            }, "none"
-            
-        title, d_min, d_sec, thumb, vidid = res
+        """Hamesha 2 values return karega"""
+        title, d_min, d_sec, thumb, vidid = await self.details(link, videoid)
         track_details = {
             "title": title,
             "link": link,
@@ -92,21 +79,19 @@ class YouTubeAPI:
         return track_details, vidid
 
     async def video(self, link: str, videoid: Union[bool, str] = None):
+        """Gaane ka streaming link nikalne ke liye"""
         try:
-            search_query = quote(link)
+            search_query = quote(str(link).split("»")[0].strip())
             search_url = f"{self.api_base}/search?query={search_query}"
             loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(None, lambda: requests.get(search_url).json())
+            response = await loop.run_in_executor(None, lambda: requests.get(search_url, timeout=10).json())
             
             if response.get("status") == "SUCCESS":
                 data = response.get("data")
                 results = data.get("results") if isinstance(data, dict) else data
-                if results:
-                    download_urls = results[0].get("downloadUrl", [])
-                    if download_urls:
-                        # Sabse high quality link (320kbps)
-                        return 1, download_urls[-1]["link"]
-            return 0, "No Link"
+                if results and results[0].get("downloadUrl"):
+                    return 1, results[0]["downloadUrl"][-1]["link"]
+            return 0, "No Link Found"
         except Exception as e:
             return 0, str(e)
 
@@ -121,6 +106,5 @@ class YouTubeAPI:
 
     async def slider(self, link: str, query_type: int, videoid: Union[bool, str] = None):
         res = await self.details(link)
-        if res:
-            return res[0], res[1], res[3], res[4]
-        return None
+        # Hamesha 4 values return karega slider ke liye
+        return res[0], res[1], res[3], res[4]
