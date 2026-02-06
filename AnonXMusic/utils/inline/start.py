@@ -35,7 +35,7 @@ def private_panel(_):
         ],
         [
             InlineKeyboardButton(text="🚑 sᴜᴘᴘᴏʀᴛ", url=config.SUPPORT_CHAT),
-            InlineKeyboardButton(text="📜 sᴏᴜʀᴄᴇ", url=f"https://github.com/VNI0X/VNI0XAPIBASE"),
+            InlineKeyboardButton(text="📜 sᴏᴜʀᴄᴇ", url=f"https://t.me/bihari_music"),
         ],
         [
             InlineKeyboardButton(text="💎 ᴄʜᴀɴɴᴇʟ", url=config.SUPPORT_CHANNEL),
