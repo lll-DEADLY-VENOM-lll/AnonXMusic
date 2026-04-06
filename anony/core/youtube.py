@@ -6,14 +6,13 @@ import re
 import yt_dlp
 import random
 import asyncio
-import aiohttp
 from pathlib import Path
 from py_yt import Playlist, VideosSearch
 
 from anony import config, logger
 from anony.helpers import FallenApi, Track, utils
 
-# Downloads folder create karna agar nahi hai
+# Downloads folder ensure karna
 if not os.path.exists("downloads"):
     os.mkdir("downloads")
 
@@ -26,7 +25,7 @@ class YouTube:
         self.cookie_dir = "anony/cookies"
         self.warned = False
         
-        # Optimized Regex: Sabhi tarah ke YT links ke liye
+        # Improved Regex for all YouTube URL types
         self.regex = re.compile(
             r"^(https?://)?(www\.|m\.|music\.)?(youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/|youtube\.com/playlist\?list=)([A-Za-z0-9_-]{11}|PL[A-Za-z0-9_-]+).*"
         )
@@ -38,28 +37,30 @@ class YouTube:
             self.api = FallenApi(config.API_URL, config.API_KEY)
 
     def get_cookies(self):
-        """Randomly selects a cookie file for each request to avoid IP bans."""
+        """Randomly selects a cookie file."""
         if not self.checked:
-            self.cookies = [
-                os.path.join(self.cookie_dir, f) 
-                for f in os.listdir(self.cookie_dir) if f.endswith(".txt")
-            ]
+            if os.path.exists(self.cookie_dir):
+                self.cookies = [
+                    os.path.join(self.cookie_dir, f) 
+                    for f in os.listdir(self.cookie_dir) if f.endswith(".txt")
+                ]
             self.checked = True
             
         if not self.cookies:
             if not self.warned:
-                logger.warning("No cookies found! YouTube might throttle or block your IP.")
+                logger.warning("No cookies found in anony/cookies/! YouTube might block you.")
                 self.warned = True
             return None
         return random.choice(self.cookies)
 
     async def search(self, query: str, m_id: int, video: bool = False) -> Track | None:
         try:
-            # Limit 1 for maximum speed
+            # Search limit 1 for speed
             _search = VideosSearch(query, limit=1)
             results = await _search.next()
             
             if not results or not results.get("result"):
+                logger.error(f"No search results for: {query}")
                 return None
 
             data = results["result"][0]
@@ -69,7 +70,7 @@ class YouTube:
                 duration=data.get("duration"),
                 duration_sec=utils.to_seconds(data.get("duration")),
                 message_id=m_id,
-                title=data.get("title")[:50], # Title length 50 tak rakha hai (behtar UI ke liye)
+                title=data.get("title")[:50], 
                 thumbnail=data.get("thumbnails", [{}])[-1].get("url").split("?")[0],
                 url=data.get("link"),
                 view_count=data.get("viewCount", {}).get("short"),
@@ -80,49 +81,61 @@ class YouTube:
             return None
 
     async def download(self, video_id: str, video: bool = False) -> str | None:
-        # Step 1: External API check (Sabse fast option)
+        # 1. External API Try (Fastest)
         if self.api:
-            if file_path := await self.api.download_track(video_id):
-                return file_path
+            try:
+                if file_path := await self.api.download_track(video_id):
+                    return file_path
+            except:
+                pass
 
         url = self.base + video_id
+        # Extension fix: Video ke liye mp4, Audio ke liye webm/mp3
         ext = "mp4" if video else "webm"
-        filename = f"downloads/{video_id}.{ext}"
+        filename = os.path.join("downloads", f"{video_id}.{ext}")
 
-        # Cache check
-        if Path(filename).exists():
+        # 2. Cache Check
+        if os.path.exists(filename):
             return filename
 
         cookie = self.get_cookies()
         
-        # Optimized YT-DLP Options for Speed
+        # 3. Optimized YT-DLP Options
         ydl_opts = {
             "quiet": True,
             "no_warnings": True,
-            "overwrites": False,
             "cookiefile": cookie,
-            "format": "bestaudio[ext=webm][acodec=opus]/bestaudio/best" if not video else "bestvideo[height<=720]+bestaudio/best[height<=720]",
-            "outtmpl": f"downloads/%(id)s.%(ext)s",
+            "format": "bestaudio/best" if not video else "bestvideo[height<=720]+bestaudio/best[height<=720]",
+            "outtmpl": f"downloads/{video_id}.%(ext)s",
             "nocheckcertificate": True,
             "geo_bypass": True,
-            "socket_timeout": 15, # Connection fast timeout
-            "retries": 2,
-            # 'external_downloader': 'aria2c', # Uncomment if aria2 is installed on server
-            # 'external_downloader_args': ['--min-split-size=1M', '--max-connection-per-server=16'],
+            "socket_timeout": 20,
+            "retries": 3,
+            "fixup": "detect_or_warn",
         }
+
+        # Adding Post-processor for Audio to ensure it's playable
+        if not video:
+            ydl_opts["postprocessors"] = [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'webm', # ya 'opus'
+                'preferredquality': '192',
+            }]
 
         def _download():
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:
                     ydl.download([url])
-                    return filename
+                    # Re-check actual path because extension might change slightly
+                    info = ydl.extract_info(url, download=False)
+                    actual_file = ydl.prepare_filename(info)
+                    return actual_file
                 except Exception as e:
-                    logger.error(f"Download Error for {video_id}: {e}")
+                    logger.error(f"yt-dlp Download Error: {e}")
                     return None
 
         return await asyncio.to_thread(_download)
 
-    # Playlist support with improved speed
     async def playlist(self, limit: int, user: str, url: str, video: bool) -> list:
         tracks = []
         try:
