@@ -6,13 +6,13 @@ import re
 import yt_dlp
 import random
 import asyncio
+import glob
 from pathlib import Path
 from py_yt import Playlist, VideosSearch
 
 from anony import config, logger
 from anony.helpers import FallenApi, Track, utils
 
-# Downloads folder ensure karna
 if not os.path.exists("downloads"):
     os.mkdir("downloads")
 
@@ -25,7 +25,6 @@ class YouTube:
         self.cookie_dir = "anony/cookies"
         self.warned = False
         
-        # Improved Regex for all YouTube URL types
         self.regex = re.compile(
             r"^(https?://)?(www\.|m\.|music\.)?(youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/|youtube\.com/playlist\?list=)([A-Za-z0-9_-]{11}|PL[A-Za-z0-9_-]+).*"
         )
@@ -37,7 +36,6 @@ class YouTube:
             self.api = FallenApi(config.API_URL, config.API_KEY)
 
     def get_cookies(self):
-        """Randomly selects a cookie file."""
         if not self.checked:
             if os.path.exists(self.cookie_dir):
                 self.cookies = [
@@ -45,24 +43,14 @@ class YouTube:
                     for f in os.listdir(self.cookie_dir) if f.endswith(".txt")
                 ]
             self.checked = True
-            
-        if not self.cookies:
-            if not self.warned:
-                logger.warning("No cookies found in anony/cookies/! YouTube might block you.")
-                self.warned = True
-            return None
-        return random.choice(self.cookies)
+        return random.choice(self.cookies) if self.cookies else None
 
     async def search(self, query: str, m_id: int, video: bool = False) -> Track | None:
         try:
-            # Search limit 1 for speed
             _search = VideosSearch(query, limit=1)
             results = await _search.next()
-            
             if not results or not results.get("result"):
-                logger.error(f"No search results for: {query}")
                 return None
-
             data = results["result"][0]
             return Track(
                 id=data.get("id"),
@@ -70,7 +58,7 @@ class YouTube:
                 duration=data.get("duration"),
                 duration_sec=utils.to_seconds(data.get("duration")),
                 message_id=m_id,
-                title=data.get("title")[:50], 
+                title=data.get("title")[:50],
                 thumbnail=data.get("thumbnails", [{}])[-1].get("url").split("?")[0],
                 url=data.get("link"),
                 view_count=data.get("viewCount", {}).get("short"),
@@ -81,26 +69,20 @@ class YouTube:
             return None
 
     async def download(self, video_id: str, video: bool = False) -> str | None:
-        # 1. External API Try (Fastest)
         if self.api:
             try:
                 if file_path := await self.api.download_track(video_id):
                     return file_path
-            except:
-                pass
+            except: pass
+
+        # Cache check: agar file pehle se hai (kisi bhi extension mein)
+        search_path = glob.glob(f"downloads/{video_id}.*")
+        if search_path:
+            return search_path[0]
 
         url = self.base + video_id
-        # Extension fix: Video ke liye mp4, Audio ke liye webm/mp3
-        ext = "mp4" if video else "webm"
-        filename = os.path.join("downloads", f"{video_id}.{ext}")
-
-        # 2. Cache Check
-        if os.path.exists(filename):
-            return filename
-
         cookie = self.get_cookies()
         
-        # 3. Optimized YT-DLP Options
         ydl_opts = {
             "quiet": True,
             "no_warnings": True,
@@ -109,27 +91,18 @@ class YouTube:
             "outtmpl": f"downloads/{video_id}.%(ext)s",
             "nocheckcertificate": True,
             "geo_bypass": True,
-            "socket_timeout": 20,
-            "retries": 3,
-            "fixup": "detect_or_warn",
+            "retries": 2,
         }
-
-        # Adding Post-processor for Audio to ensure it's playable
-        if not video:
-            ydl_opts["postprocessors"] = [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'webm', # ya 'opus'
-                'preferredquality': '192',
-            }]
 
         def _download():
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 try:
                     ydl.download([url])
-                    # Re-check actual path because extension might change slightly
-                    info = ydl.extract_info(url, download=False)
-                    actual_file = ydl.prepare_filename(info)
-                    return actual_file
+                    # Download ke baad check karein ki file kis extension se save hui
+                    downloaded_files = glob.glob(f"downloads/{video_id}.*")
+                    if downloaded_files:
+                        return downloaded_files[0]
+                    return None
                 except Exception as e:
                     logger.error(f"yt-dlp Download Error: {e}")
                     return None
