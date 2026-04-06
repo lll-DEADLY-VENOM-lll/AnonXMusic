@@ -1,4 +1,5 @@
-# File: anony/helpers/_inline.py
+# # File: anony/helpers/_inline.py
+from pyrogram import types  # <--- ADD THIS IMPORT
 from .markup.start import StartMarkup
 from .markup.play import PlayMarkup
 from anony import config
