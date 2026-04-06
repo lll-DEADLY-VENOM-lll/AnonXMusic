@@ -1,106 +1,119 @@
 #!/bin/bash
 
+# --- Functions ---
 pprint() {
     local msg="$1" c="$2" r="\033[0m"
     case "$c" in
-        cred) c="\033[0;31m";; cgreen) c="\033[0;32m";;
-        cyellow) c="\033[0;33m";; cblue) c="\033[0;34m";;
+        cred) c="\033[0;31m";; 
+        cgreen) c="\033[0;32m";;
+        cyellow) c="\033[0;33m";; 
+        cblue) c="\033[0;34m";;
+        cmagenta) c="\033[0;35m";;
         *) c="\033[0;35m";;
     esac
     printf "%b%b%b" "$c" "$msg" "$r"
 }
-color_reset() { printf '\033[0m'; }
 
-[ "$EUID" -ne 0 ] && { pprint "You need sudo privileges. Exiting...\n" "cred"; exit 1; }
+# Check for Root/Sudo
+if [ "$EUID" -ne 0 ]; then
+    pprint "Please run this script with sudo or as root.\n" "cred"
+    exit 1
+fi
+
 yesnoprompt() {
-    stty raw -echo
-    answer=$(head -c1)
-    stty sane
-    [[ "$answer" =~ [Yy] ]]
+    read -rn1 -p "$1 (y/n): " answer
+    case $answer in
+        [Yy]* ) return 0;;
+        * ) return 1;;
+    esac
 }
 
-update() {
-    pprint "\n\nUpdating package list... "
-    if sudo apt update 2>&1 | grep -q "can be upgraded"; then
-        pprint "Update available. Upgrade (y/n)? " "cyellow"
-        yesnoprompt && { 
-            pprint "\nUpgrading... "
-            if sudo apt upgrade -y &>/dev/null; then
-                pprint "Done.\n\n" "cgreen"
-            else
-                pprint "Failed.\n\n" "cred"
-            fi
-        } || echo
+update_system() {
+    pprint "\n\nUpdating package list...\n" "cblue"
+    apt update -y
+    if apt list --upgradable 2>/dev/null | grep -q "/"; then
+        pprint "\nUpdates are available. Upgrade now? " "cyellow"
+        if yesnoprompt ""; then
+            pprint "\nUpgrading system packages... " "cblue"
+            apt upgrade -y && pprint "Done.\n" "cgreen" || pprint "Failed.\n" "cred"
+        fi
     else
-        pprint "Already up-to-date.\n\n" "cgreen"
+        pprint "System is already up-to-date.\n" "cgreen"
     fi
 }
 
 install_pkg() {
-    command -v "$1" &>/dev/null || { 
-        pprint "$1 not found, installing... "
-        sudo apt install -y "$2" &>/dev/null && pprint "Done.\n\n" "cgreen" || pprint "Failed.\n\n" "cred"
-    }
+    if ! command -v "$1" &>/dev/null; then
+        pprint "Installing $1... " "cyellow"
+        apt install -y "$2" &>/dev/null && pprint "Done.\n" "cgreen" || pprint "Failed.\n" "cred"
+    else
+        pprint "$1 is already installed.\n" "cgreen"
+    fi
 }
 
 install_deno() {
-    pprint "\n\nInstalling Deno...\n" "cblue"
+    pprint "\nChecking Deno installation...\n" "cblue"
     if command -v deno &>/dev/null; then
-        pprint "Deno already installed.\n" "cgreen"
+        pprint "Deno already installed: $(deno --version | head -n1)\n" "cgreen"
     else
+        pprint "Installing Deno... " "cyellow"
         curl -fsSL https://deno.land/install.sh | sh >/dev/null 2>&1
-        deno_path="$HOME/.deno/bin"
-        if [[ ":$PATH:" != *":$deno_path:"* ]]; then
-            echo "export DENO_INSTALL=\"$HOME/.deno\"" >> ~/.bashrc
-            echo "export PATH=\"\$DENO_INSTALL/bin:\$PATH\"" >> ~/.bashrc
-            pprint "Deno path added to ~/.bashrc\n" "cyellow"
+        
+        # Path Handling
+        DENO_BIN="$HOME/.deno/bin"
+        if [[ ":$PATH:" != *":$DENO_BIN:"* ]]; then
+            # Add to bashrck
+            echo 'export DENO_INSTALL="$HOME/.deno"' >> ~/.bashrc
+            echo 'export PATH="$DENO_INSTALL/bin:$PATH"' >> ~/.bashrc
+            # Add to zshrc if exists
+            [ -f ~/.zshrc ] && echo 'export PATH="$HOME/.deno/bin:$PATH"' >> ~/.zshrc
         fi
         export DENO_INSTALL="$HOME/.deno"
         export PATH="$DENO_INSTALL/bin:$PATH"
-        pprint "Deno installation complete.\n" "cgreen"
-    fi
-}
-
-install_py() {
-    pprint "\n\nInstalling Python dependencies...\n"
-    if pip3 install -U pip -q && pip3 install -U -r requirements.txt -q; then
         pprint "Done.\n" "cgreen"
-    else
-        pprint "Failed (continuing...)\n" "cred"
     fi
 }
 
-save_env_vars() {
-    pprint "\n\nProcessing your variables..." "cgreen"
-    [ -f .env ] && rm .env
-    cat >.env <<EOF
-API_ID=$1
-API_HASH=$2
-BOT_TOKEN=$3
-MONGO_URL=$4
-LOGGER_ID=$5
-SESSION=$6
-OWNER_ID=$7
-EOF
+install_py_deps() {
+    pprint "\nInstalling Python dependencies...\n" "cblue"
+    pip3 install -U pip -q
+    if [ -f "requirements.txt" ]; then
+        if pip3 install -U -r requirements.txt -q; then
+            pprint "Dependencies installed successfully.\n" "cgreen"
+        else
+            pprint "Failed to install some dependencies. Please check manually.\n" "cred"
+        fi
+    else
+        pprint "requirements.txt not found. Skipping pip install.\n" "cyellow"
+    fi
 }
 
+# --- Main Logic ---
 
 clear
-pprint "Welcome to the AnonXMusic Installation Setup\n\n" "cmagenta"
+pprint "==============================================\n" "cmagenta"
+pprint "   AnonXMusic Installation Setup (Updated)    \n" "cmagenta"
+pprint "==============================================\n" "cmagenta"
 sleep 1
 
-update
-install_pkg python3-pip python3-pip
-install_pkg ffmpeg ffmpeg unzip
+update_system
+
+# Install required tools
+install_pkg "python3" "python3-pip"
+install_pkg "ffmpeg" "ffmpeg"
+install_pkg "unzip" "unzip"
+install_pkg "curl" "curl"
+
 install_deno
-install_py
+install_py_deps
 
-pprint "\nAnonXMusic Installation Completed.\n" "cgreen"
-sleep 2
-clear
+pprint "\nInstallation phase completed.\n" "cgreen"
+sleep 1
 
-pprint "\nEnter Your Values Below\n\n\n" "cmagenta"
-read -rp "API ID: " api_id
+# --- Variable Collection ---
+pprint "\n--- Configuration Setup ---\n" "cmagenta"
+
+read -rp "API ID (Integer): " api_id
 read -rp "API HASH: " api_hash
 read -rp "BOT TOKEN: " bot_token
 read -rp "OWNER ID: " ownid
@@ -108,6 +121,17 @@ read -rp "MONGO URL: " mongo_db
 read -rp "LOG GROUP ID: " logger
 read -rp "STRING SESSION: " string_session
 
-save_env_vars "$api_id" "$api_hash" "$bot_token" "$mongo_db" "$logger" "$string_session" "$ownid"
+# Save to .env
+cat > .env <<EOF
+API_ID=$api_id
+API_HASH=$api_hash
+BOT_TOKEN=$bot_token
+MONGO_DB_URI=$mongo_db
+LOGGER_ID=$logger
+STRING_SESSION=$string_session
+OWNER_ID=$ownid
+EOF
 
-pprint "\nYour variables have been saved! Start bot with: bash start\n" "cgreen"
+pprint "\nSUCCESS: .env file has been generated!\n" "cgreen"
+pprint "To start the bot, run:\n" "cblue"
+pprint "   bash start\n\n" "cyellow"
