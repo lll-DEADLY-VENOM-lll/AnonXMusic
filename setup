@@ -14,10 +14,9 @@ pprint() {
     printf "%b%b%b" "$c" "$msg" "$r"
 }
 
-# Check for Root/Sudo
+# Check for Root/Sudo (Optional: Railway users might not have sudo)
 if [ "$EUID" -ne 0 ]; then
-    pprint "Please run this script with sudo or as root.\n" "cred"
-    exit 1
+    pprint "Warning: Running without root. If installation fails, try with sudo.\n" "cyellow"
 fi
 
 yesnoprompt() {
@@ -30,22 +29,14 @@ yesnoprompt() {
 
 update_system() {
     pprint "\n\nUpdating package list...\n" "cblue"
-    apt update -y
-    if apt list --upgradable 2>/dev/null | grep -q "/"; then
-        pprint "\nUpdates are available. Upgrade now? " "cyellow"
-        if yesnoprompt ""; then
-            pprint "\nUpgrading system packages... " "cblue"
-            apt upgrade -y && pprint "Done.\n" "cgreen" || pprint "Failed.\n" "cred"
-        fi
-    else
-        pprint "System is already up-to-date.\n" "cgreen"
-    fi
+    apt update -y 2>/dev/null
+    pprint "System update check done.\n" "cgreen"
 }
 
 install_pkg() {
     if ! command -v "$1" &>/dev/null; then
         pprint "Installing $1... " "cyellow"
-        apt install -y "$2" &>/dev/null && pprint "Done.\n" "cgreen" || pprint "Failed.\n" "cred"
+        apt install -y "$2" &>/dev/null && pprint "Done.\n" "cgreen" || pprint "Failed (or already installed).\n" "cred"
     else
         pprint "$1 is already installed.\n" "cgreen"
     fi
@@ -60,16 +51,12 @@ install_deno() {
         curl -fsSL https://deno.land/install.sh | sh >/dev/null 2>&1
         
         # Path Handling
-        DENO_BIN="$HOME/.deno/bin"
-        if [[ ":$PATH:" != *":$DENO_BIN:"* ]]; then
-            # Add to bashrck
-            echo 'export DENO_INSTALL="$HOME/.deno"' >> ~/.bashrc
-            echo 'export PATH="$DENO_INSTALL/bin:$PATH"' >> ~/.bashrc
-            # Add to zshrc if exists
-            [ -f ~/.zshrc ] && echo 'export PATH="$HOME/.deno/bin:$PATH"' >> ~/.zshrc
-        fi
         export DENO_INSTALL="$HOME/.deno"
         export PATH="$DENO_INSTALL/bin:$PATH"
+        
+        # Permanent Path
+        echo 'export DENO_INSTALL="$HOME/.deno"' >> ~/.bashrc
+        echo 'export PATH="$DENO_INSTALL/bin:$PATH"' >> ~/.bashrc
         pprint "Done.\n" "cgreen"
     fi
 }
@@ -92,7 +79,7 @@ install_py_deps() {
 
 clear
 pprint "==============================================\n" "cmagenta"
-pprint "   AnonXMusic Installation Setup (Updated)    \n" "cmagenta"
+pprint "   AnonXMusic Installation Setup (Fixed)      \n" "cmagenta"
 pprint "==============================================\n" "cmagenta"
 sleep 1
 
@@ -112,6 +99,7 @@ sleep 1
 
 # --- Variable Collection ---
 pprint "\n--- Configuration Setup ---\n" "cmagenta"
+pprint "Please enter your details below:\n" "cyellow"
 
 read -rp "API ID (Integer): " api_id
 read -rp "API HASH: " api_hash
@@ -119,19 +107,19 @@ read -rp "BOT TOKEN: " bot_token
 read -rp "OWNER ID: " ownid
 read -rp "MONGO URL: " mongo_db
 read -rp "LOG GROUP ID: " logger
-read -rp "STRING SESSION: " string_session
+read -rp "STRING SESSION (SESSION1): " string_session
 
-# Save to .env
+# Save to .env (Corrected Keys for AnonX)
 cat > .env <<EOF
 API_ID=$api_id
 API_HASH=$api_hash
 BOT_TOKEN=$bot_token
-MONGO_DB_URI=$mongo_db
+MONGO_URL=$mongo_db
 LOGGER_ID=$logger
-STRING_SESSION=$string_session
+SESSION1=$string_session
 OWNER_ID=$ownid
 EOF
 
-pprint "\nSUCCESS: .env file has been generated!\n" "cgreen"
+pprint "\nSUCCESS: .env file has been generated with correct keys!\n" "cgreen"
 pprint "To start the bot, run:\n" "cblue"
 pprint "   bash start\n\n" "cyellow"
